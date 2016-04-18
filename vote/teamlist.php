@@ -18,8 +18,8 @@
 
 	echo "<table>
 		<tr>
-			<td> VEREIN </td>
-			<td> VOTE </td>";
+			<td align=left><b>VEREIN</b></td>
+			<td align=center><b>VOTES</b></td>";
 			
 		
 			//print_r($array);
@@ -27,12 +27,12 @@
 				//print_r($value);
 				
 				echo "<tr><td>". $value['teamname']. "</td>";
-				echo "<td> <input type='radio' name='verein' value='$value[teamname]'/> </td></tr> ";
+				echo "<td align=center> <input type='radio' name='verein' value='$value[teamname]'/> </td></tr> ";
 				
 			}
 			
 			echo "<tr><td> anderer Verein </td>";
-			echo "<td> <input type='radio' name='verein' /> </td></tr>";
+			echo "<td align=center> <input type='radio' name='verein' /> </td></tr>";
 	echo "</table>";
 	echo "<input type='submit' value='auswählen'/>";
 	

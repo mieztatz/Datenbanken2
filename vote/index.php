@@ -7,13 +7,14 @@
   		<link rel="stylesheet" href="styles.css">
    		
   
-		<style> table, td, th { border: 1px solid black; } </style>
+		
 	</head>
 	<body>
 		<div id='cssmenu'>
 			<ul>
   				<li class='active'><a href='index.php'>Voting</a></li>
    				<li><a href='result.php'>Results</a></li>
+				<li><a href='./newsletter/newsletter.php'>Newsletter</a></li>
 			</ul>
 		</div>
 		<h1> VEREINSVOTING </h1>

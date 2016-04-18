@@ -6,13 +6,14 @@
   		<link rel="stylesheet" href="styles.css">
    		
   
-		<style> table, td, th { border: 1px solid black; } </style>
+		
 	</head>
 	<body>
 		<div id='cssmenu'>
 			<ul>
   				<li><a href='index.php'>Voting</a></li>
    				<li class='active'><a href='result.php'>Results</a></li>
+				<li><a href='./newsletter/newsletter.php'>Newsletter</a></li>
 			</ul>
 		</div>
 
@@ -43,17 +44,17 @@
 	
 			echo "<p><table>
 				<tr>
-					<td> VEREIN </td>
-					<td> VOTES </td>
+					<td align=left><b>VEREIN</b></td>
+					<td align=center><b>VOTES</b></td>
 				</tr>";
 					//print_r($vots[0]['summe']);
 					echo "<br />";
 					//print_r($array);
 					foreach($array as $value) {
 							
-							echo "<tr><td>". $value['teamname']. "</td>";
+							echo "<tr><td style='padding-right:15px' align=left>". $value['teamname']. "</td>";
 							$tmp = number_format($value['vote']/$vots[0]['summe']*100,2);
-							echo "<td>". $tmp. "%</td></tr>";
+							echo "<td align=right>". $tmp. "%</td></tr>";
 						}
 					echo "</tr>";
 					
