@@ -1,5 +1,4 @@
 <?php
-	echo "<H1> VEREINE </H1>";
 		
 	include ("connection.php");
 
@@ -19,19 +18,21 @@
 
 	echo "<table>
 		<tr>
-			<td> VOTE </td>
 			<td> VEREIN </td>
-		</tr>
+			<td> VOTE </td>";
 			
-		<tr>";
+		
+			//print_r($array);
 			foreach($array as $value) {
-				foreach($value as $tmp) {
-					echo "<td> <input type='radio' name='verein' value='$tmp' /> </td> ";
-					echo "<td> $tmp </td></tr>";
-				}
+				//print_r($value);
+				
+				echo "<tr><td>". $value['teamname']. "</td>";
+				echo "<td> <input type='radio' name='verein' value='$value[teamname]'/> </td></tr> ";
+				
 			}
-			echo "<td> <input type='radio' name='verein' /> </td> ";
-			echo "<td> anderer Verein </td></tr>";
+			
+			echo "<tr><td> anderer Verein </td>";
+			echo "<td> <input type='radio' name='verein' /> </td></tr>";
 	echo "</table>";
 	echo "<input type='submit' value='auswählen'/>";
 	

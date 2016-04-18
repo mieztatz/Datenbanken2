@@ -6,6 +6,7 @@ if(isset($_POST['verein'])) {
 	if($selected_radio == "on"){
 		echo "<p>Bitte tragen Sie hier Ihren gewünschten Verein ein: $eingabeFeld <input type='submit' value='hinzufügen'/> </p>";
 	}
+	
 }
 
 ?>
