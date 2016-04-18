@@ -3,13 +3,20 @@
 	
 	if(isset($_POST['eingabe'])){
 		$newclub = $_POST['eingabe'];
-		if(mysqli_query($mysqli, "INSERT INTO teams (teamname, vote) VALUES ('$newclub', '1')")){
-			echo "<p>Der Verein <b>$newclub</b> wurde in die DB mit aufgenommen. Danke für Ihre Abstimmung.</p>";
+		if(preg_match('/^[a-zA-Z0-9].*/',$newclub)){
+			if(mysqli_query($mysqli, "INSERT INTO teams (teamname, vote) VALUES ('$newclub', '1')")){
+				echo "<p>Der Verein <b>$newclub</b> wurde in die DB mit aufgenommen. Danke für Ihre Abstimmung.</p>";
+			}
+			else{
+				echo "<p>Der Verein <b>$newclub</b> existiert bereits.<p>";
+			}
+			
 		}
 		else{
-			echo "<p>Der Verein <b>$newclub</b> existiert bereits.<p>";
+			echo "<p>Bitte geben Sie einen Verein an.</p>";
 		}
-		header("Refresh:5");
+		
+		header("Refresh:3");
 	}
 
 	if(isset($_POST['verein'])){
