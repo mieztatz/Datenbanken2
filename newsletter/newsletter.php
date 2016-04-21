@@ -15,7 +15,7 @@
 			</ul>
 		</div>
 		<h1> Newsletter/Mailinglisten abnonieren </h1>
-		<p> Hier kannst du für eine oder mehere Fußballigen den Newsletter abonnieren. </p>
+		<p> Bitte gibt hier deine Daten ein um anschließend für eine oder mehere Fußballigen den Newsletter abonnieren zu können. </p>
 
 		<form name="data" method="POST" action="userdata.php">
 			<table>
@@ -37,7 +37,7 @@
 					</td>
 				</tr>
       </table>
-			<p> <input type='submit' value='Daten eintragen'/> <p>
+			<p> <input type='submit' name='datainsert' value='Daten eintragen'/> <p>
 		</form>
 
 

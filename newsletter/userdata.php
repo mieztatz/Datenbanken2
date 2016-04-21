@@ -19,7 +19,7 @@
     <h1>  Newsletter </h1>
     Hier können Sie die gewünschten Newsletter der einzelnen Fußballkategorien auswählen.
   </p>
-
+<form name="newsabo" method="POST" action="abos.php">
 <?php
   include ("../connection.php");
 
@@ -34,8 +34,37 @@
 
 
   if(!$stmt->execute()){
-    echo "Error";
-    $stmt->close();
+
+    $sqlLeag = "SELECT * FROM league";
+    $ersin = "SELECT leaguenews FROM newsletter WHERE mail = '$mail'";
+  /*  $sqlReq = "SELECT * FROM league WHERE leaguename NOT IN ($ersin)";  wird nicht benötigt. */
+
+
+    $stmt = $mysqli->prepare($sqlLeag);
+
+    if($stmt){
+      $stmt->execute();
+      $stmtResult = $stmt->get_result();
+      $resultLeag= $stmtResult->fetch_all(MYSQLI_ASSOC);
+      $stmt->close();
+
+      $stmt = $mysqli->prepare($ersin);
+      $stmt->execute();
+      $stmtResult =  $stmt->get_result();
+      $resultNews = $stmtResult->fetch_all(MYSQLI_ASSOC);
+      $stmt->close();
+
+      echo "<table>";
+      foreach($resultLeag as $leagues) {
+        if(array_search($leagues['leaguename'],array_column($resultNews,'leaguenews')) !== false){
+            echo "<tr><td><input type='checkbox' value='$leagues[leaguename]' checked> $leagues[leaguename]</td></tr>";
+          }
+          else{
+            echo "<tr><td><input type='checkbox' value='$leagues[leaguename]'> $leagues[leaguename]</td></tr>";
+          }
+        }
+      echo "</table>";
+    }
   }
   else{
 
@@ -62,6 +91,8 @@
 	}
 
   ?>
+  <p> <input type='submit' name='abo' value='abonnieren'/> <p>
+</form>
 
 </body>
 </html>
