@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!doctype html>
 <html lang="de">
     <head>
@@ -17,19 +18,24 @@
 
 
 <?php
-  include ("../connection.php");
-  /* TODO: Variable $mail aus userdata.php an diese php Datei übergeben. Vermutlich mit $_SESSION oder nochmal irgendwie mit $_POST*/
-print_r($_POST['mail']);
-/*  $sqlIns = "INSERT INTO newsletter (mail,leaguenews) VALUES (?,?)";
-$stmt = $mysqli->prepare($sqlIns);
-$stmt->bind_param("ss",$mail,$league);
-if($stmt->execute()){
-  echo "DB wurde aktualisiert.";
-}
-else{
-  echo "Error";
-}
-*/
+
+  if(isset($_SESSION['mail'])){
+    $mail = $_SESSION['mail'];
+    include ("../connection.php");
+    print_r($_SESSION['mail']);
+    print_r($_POST['leagueCheckBox']);
+  //  $sqlIns = "INSERT INTO newsletter (mail,leaguenews) VALUES ($mail,?)";
+  //  $stmt = $mysqli->prepare($sqlIns);
+  //  $stmt->bind_param("s",$league);
+  //  if($stmt->execute()){
+  //    echo "DB wurde aktualisiert.";
+  //  }
+  //  else{
+      echo "Error";
+  //  }
+  }
+  session_destroy();
+  $mysqli->close();
 ?>
 <p>
   Ihre Daten wurden aktualisiert.
