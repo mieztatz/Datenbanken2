@@ -10,90 +10,92 @@
   <body>
 		<div id='cssmenu'>
 			<ul>
-  				<li><a href='../index.php'>Voting</a></li>
-   				<li><a href='../result.php'>Results</a></li>
+  				<li><a href='../vote/index.php'>Voting</a></li>
+   				<li><a href='../vote/result.php'>Results</a></li>
 				<li class='active'><a href='newsletter.php'>Newsletter</a></li>
+				<li><a href='sendNewsletter.php'>Newsletter verschicken(eingeschränkt)</a></li>
 			</ul>
 		</div>
 
-    <p>
+    <div id='text'>
     <h1>  Newsletter </h1>
-    Hier können Sie die gewünschten Newsletter der einzelnen Fußballkategorien auswählen.
-  </p>
-<form name="newsabo" method="POST" action="abos.php">
-<?php
+	  <p> Hier können Sie die gewünschten Newsletter der einzelnen Fußballkategorien auswählen.</p>
+  
+		<form name="newsabo" method="POST" action="abos.php">
+		<?php
 
-	$lastname = !empty($_POST['lastname']) ? $_POST['lastname'] : noinput();
-	$firstname = !empty($_POST['firstname']) ? $_POST['firstname'] : noinput();
-  $mail = !empty($_POST['mail']) ? $_POST['mail'] : noinput();
-  $_SESSION['mail'] = $mail;
-	$member = $_POST['member'] == "JA" ? (int)1 : (int)0;
+			$lastname = !empty($_POST['lastname']) ? $_POST['lastname'] : noinput();
+			$firstname = !empty($_POST['firstname']) ? $_POST['firstname'] : noinput();
+		  $mail = !empty($_POST['mail']) ? $_POST['mail'] : noinput();
+		  $_SESSION['mail'] = $mail;
+			$member = $_POST['member'] == "JA" ? (int)1 : (int)0;
 
-  include ("../connection.php");
+		  include ("../vote/connection.php");
 
-  $sqlIns = "INSERT INTO fans (firstname,lastname,mail,clubmember) VALUES (?,?,?,?)";
-  $stmt = $mysqli->prepare($sqlIns);
-  $stmt->bind_param("sssi",$lastname,$firstname,$mail,$member);
+		  $sqlIns = "INSERT INTO fans (firstname,lastname,mail,clubmember) VALUES (?,?,?,?)";
+		  $stmt = $mysqli->prepare($sqlIns);
+		  $stmt->bind_param("sssi",$lastname,$firstname,$mail,$member);
 
-  if(!$stmt->execute()){
+		  if(!$stmt->execute()){
 
-    $sqlLeag = "SELECT * FROM league";
-    $ersin = "SELECT leaguenews FROM newsletter WHERE mail = '$mail'";
-  /*  $sqlReq = "SELECT * FROM league WHERE leaguename NOT IN ($ersin)";  wird nicht benötigt. */
+			$sqlLeag = "SELECT * FROM league";
+			$ersin = "SELECT leaguenews FROM newsletter WHERE mail = '$mail'";
+		  /*  $sqlReq = "SELECT * FROM league WHERE leaguename NOT IN ($ersin)";  wird nicht benötigt. */
 
 
-    $stmt = $mysqli->prepare($sqlLeag);
+			$stmt = $mysqli->prepare($sqlLeag);
 
-    if($stmt){
-      $stmt->execute();
-      $stmtResult = $stmt->get_result();
-      $resultLeag= $stmtResult->fetch_all(MYSQLI_ASSOC);
-      $stmt->close();
+			if($stmt){
+			  $stmt->execute();
+			  $stmtResult = $stmt->get_result();
+			  $resultLeag= $stmtResult->fetch_all(MYSQLI_ASSOC);
+			  $stmt->close();
 
-      $stmt = $mysqli->prepare($ersin);
-      $stmt->execute();
-      $stmtResult =  $stmt->get_result();
-      $resultNews = $stmtResult->fetch_all(MYSQLI_ASSOC);
-      $stmt->close();
+			  $stmt = $mysqli->prepare($ersin);
+			  $stmt->execute();
+			  $stmtResult =  $stmt->get_result();
+			  $resultNews = $stmtResult->fetch_all(MYSQLI_ASSOC);
+			  $stmt->close();
 
-      echo "<table>";
-      foreach($resultLeag as $leagues) {
-        if(array_search($leagues['leaguename'],array_column($resultNews,'leaguenews')) !== false){
-            echo "<tr><td><input type='checkbox' name='leagueCheckBox[]' value='$leagues[leaguename]' checked> $leagues[leaguename]</td></tr>";
-          }
-          else{
-            echo "<tr><td><input type='checkbox' name='leagueCheckBox[]' value='$leagues[leaguename]'> $leagues[leaguename]</td></tr>";
-          }
-        }
-      echo "</table>";
-    }
-  }
-  else{
+			  echo "<table>";
+			  foreach($resultLeag as $leagues) {
+				if(array_search($leagues['leaguename'],array_column($resultNews,'leaguenews')) !== false){
+					echo "<tr><td><input type='checkbox' name='leagueCheckBox[]' value='$leagues[leaguename]' checked> $leagues[leaguename]</td></tr>";
+				  }
+				  else{
+					echo "<tr><td><input type='checkbox' name='leagueCheckBox[]' value='$leagues[leaguename]'> $leagues[leaguename]</td></tr>";
+				  }
+				}
+			  echo "</table>";
+			}
+		  }
+		  else{
 
-    $sqlReq = "SELECT * FROM league";
-    $stmt = $mysqli->prepare($sqlReq);
-    if($stmt){
-      $stmt->execute();
-      $stmt->bind_result($result);
+			$sqlReq = "SELECT * FROM league";
+			$stmt = $mysqli->prepare($sqlReq);
+			if($stmt){
+			  $stmt->execute();
+			  $stmt->bind_result($result);
 
-      echo "<table>";
-         while ($stmt->fetch()) {
-             echo "<tr><td><input type='checkbox' name='leagueCheckBox[]' value='$result'> $result</td></tr>";
-         }
-      echo "</table>";
-    }
-    $stmt->close();
-  }
-  $mysqli->close();
+			  echo "<table>";
+				 while ($stmt->fetch()) {
+					 echo "<tr><td><input type='checkbox' name='leagueCheckBox[]' value='$result'> $result</td></tr>";
+				 }
+			  echo "</table>";
+			}
+			$stmt->close();
+		  }
+		  $mysqli->close();
 
-  function noinput() {
-		echo "<p>Bitte alle mit * gekennzeichneten Felder ausfüllen.</p>";
-    exit();
-	}
+		  function noinput() {
+				echo "<p>Bitte alle mit * gekennzeichneten Felder ausfüllen.</p>";
+			exit();
+			}
 
-  ?>
-  <p> <input type='submit' name='abo' value='abonnieren'/> <p>
-</form>
+		  ?>
+ 	 <p> <input type='submit' name='abo' value='abonnieren'/> </p>
+	</form>
+	 </div>
 
 </body>
 </html>
