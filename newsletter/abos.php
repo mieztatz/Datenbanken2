@@ -19,20 +19,30 @@
 
 <?php
 
-  if(isset($_SESSION['mail'])){
+  if(isset($_SESSION['mail']) && isset($_POST['leagueCheckBox'])){
     $mail = $_SESSION['mail'];
+    $leagues = $_POST['leagueCheckBox'];
     include ("../connection.php");
-    print_r($_SESSION['mail']);
-    print_r($_POST['leagueCheckBox']);
-  //  $sqlIns = "INSERT INTO newsletter (mail,leaguenews) VALUES ($mail,?)";
-  //  $stmt = $mysqli->prepare($sqlIns);
-  //  $stmt->bind_param("s",$league);
-  //  if($stmt->execute()){
-  //    echo "DB wurde aktualisiert.";
-  //  }
-  //  else{
-      echo "Error";
-  //  }
+  //  print_r($_SESSION['mail']);
+  //  print_r($_POST['leagueCheckBox']);
+    $sqlIns = "INSERT IGNORE INTO `newsletter` (`mail`, `leaguenews`) VALUES (?,?)";
+    $stmt = $mysqli->prepare($sqlIns);
+    $stmt->bind_param("ss",$mail,$league);
+/*fügt neue Newsletter-Abos ein. TODO: nicht mehr gewollte Newsletter-Abos aus DB löschen. z. B. mit "DELETE FROM ... WHERE ... like ..." */
+    foreach($leagues as $league){
+      if($stmt->execute()){
+        $success = true;
+      }
+      else{
+        $success = false;
+      }
+    }
+    if($success){
+      echo "Daten wurden aktualisiert";
+    }
+    else{
+      echo "Fehler bei der Aktuallisierung der Daten";
+    }
   }
   session_destroy();
   $mysqli->close();

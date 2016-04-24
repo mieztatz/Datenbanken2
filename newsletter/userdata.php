@@ -22,11 +22,6 @@
   </p>
 <form name="newsabo" method="POST" action="abos.php">
 <?php
-  include ("../connection.php");
-
-  $sqlIns = "INSERT INTO fans (firstname,lastname,mail,clubmember) VALUES (?,?,?,?)";
-  $stmt = $mysqli->prepare($sqlIns);
-  $stmt->bind_param("sssi",$lastname,$firstname,$mail,$member);
 
 	$lastname = !empty($_POST['lastname']) ? $_POST['lastname'] : noinput();
 	$firstname = !empty($_POST['firstname']) ? $_POST['firstname'] : noinput();
@@ -34,6 +29,11 @@
   $_SESSION['mail'] = $mail;
 	$member = $_POST['member'] == "JA" ? (int)1 : (int)0;
 
+  include ("../connection.php");
+
+  $sqlIns = "INSERT INTO fans (firstname,lastname,mail,clubmember) VALUES (?,?,?,?)";
+  $stmt = $mysqli->prepare($sqlIns);
+  $stmt->bind_param("sssi",$lastname,$firstname,$mail,$member);
 
   if(!$stmt->execute()){
 
@@ -59,10 +59,10 @@
       echo "<table>";
       foreach($resultLeag as $leagues) {
         if(array_search($leagues['leaguename'],array_column($resultNews,'leaguenews')) !== false){
-            echo "<tr><td><input type='checkbox' name='leagueCheckBox' value='$leagues[leaguename]' checked> $leagues[leaguename]</td></tr>";
+            echo "<tr><td><input type='checkbox' name='leagueCheckBox[]' value='$leagues[leaguename]' checked> $leagues[leaguename]</td></tr>";
           }
           else{
-            echo "<tr><td><input type='checkbox' name='leagueCheckBox' value='$leagues[leaguename]'> $leagues[leaguename]</td></tr>";
+            echo "<tr><td><input type='checkbox' name='leagueCheckBox[]' value='$leagues[leaguename]'> $leagues[leaguename]</td></tr>";
           }
         }
       echo "</table>";
@@ -78,7 +78,7 @@
 
       echo "<table>";
          while ($stmt->fetch()) {
-             echo "<tr><td><input type='checkbox' name='leagueCheckBox' value='$result'> $result</td></tr>";
+             echo "<tr><td><input type='checkbox' name='leagueCheckBox[]' value='$result'> $result</td></tr>";
          }
       echo "</table>";
     }
@@ -88,7 +88,6 @@
 
   function noinput() {
 		echo "<p>Bitte alle mit * gekennzeichneten Felder ausfüllen.</p>";
-    $mysqli->close();
     exit();
 	}
 
