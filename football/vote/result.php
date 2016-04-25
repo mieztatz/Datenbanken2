@@ -25,7 +25,7 @@
 				include ("../connection.php");
 				//Schritt 2: Statement vorbereiten
 				$stmt = $mysqli->prepare("SELECT * FROM teams");
-				$sumVots = $mysqli->prepare("SELECT SUM(vote) AS summe FROM teams ");
+				$sumVots = $mysqli->prepare("SELECT SUM(vote) AS summe FROM teams");
 
 				//Variablen müssen hier nicht eingebunden werden
 

@@ -19,23 +19,20 @@
 				<li class='active'><a href='sendNewsletter.php'>Newsletter verschicken</a></li>
 			</ul>
 		</div>
-		<form name="newstext" method="POST" action="newsresult.php">
+
 		<div id='text'>
 			<h1> NEWSLETTER ABSENDEN</h1>
 			<p> Es gibt Neuigkeiten? </p>
-			<p> Sende hier den Newsletter ab</p>
-      
+			<p> Sende hier den Newsletter ab.</p>
+      <form name="newstext" method="POST" action="newsresult.php">
 			<p> Wenn willst du den Newsletter senden? <select name="selection">
 										<option value="member"> Vereinsmitglieder
 										<option value="noMember"> keine Vereinsmitglieder
-                    					<option value="allMember"> Vereinsmitgliedschaft egal 
+                    <option value="allMember"> Vereinsmitglieder (ja & nein)
 									</select>
 			</p>
-    
-        <?php
-          
-           
-            echo "	An welche Fußballkatagorie soll der Newsletter verschickt werden?";
+      <?php
+          echo "An welche Fußballkatagorie soll der Newsletter verschickt werden?";
             include ("../connection.php");
             $sqlReq = "SELECT * FROM league";
             $stmt = $mysqli->prepare($sqlReq);
@@ -46,77 +43,22 @@
                      echo "<tr><td><input type='checkbox' name='leagueCheckBox[]' value='$result'> $result</td></tr>";
                  }
               echo "</table>";
+              $stmt->close();
             }
-            $stmt->close();
             $mysqli->close();
-         
-          /*else if(isset($_POST['selection']) && $_POST['selection'] == "allMember"){
-            echo "News an registrierte Abonnenten senden:";
-            include ("../connection.php");
-            $sqlReq = "SELECT mail FROM fans";
-            $stmt = $mysqli->prepare($sqlReq);
-            if(  $stmt->execute()){
-              $stmt->bind_result($result);
-
-              echo "<table>";
-                 while ($stmt->fetch()) {
-                     echo "<tr><td><input type='checkbox' name='memberCheckBox[]' value='$result'> $result</td></tr>";
-                 }
-              echo "</table>";
-            }
-            $stmt->close();
-            $mysqli->close();
-          }
-          else if(isset($_POST['selection']) && $_POST['selection'] == "member"){
-            echo "News an Vereinsmitglieder:";
-            include ("../connection.php");
-            $sqlReq = "SELECT mail FROM fans WHERE clubmember = 1";
-            $stmt = $mysqli->prepare($sqlReq);
-            if( $stmt->execute()){
-              $stmt->bind_result($result);
-
-              echo "<table>";
-                 while ($stmt->fetch()) {
-                     echo "<tr><td><input type='checkbox' name='memberCheckBox[]' value='$result'> $result</td></tr>";
-                 }
-              echo "</table>";
-            }
-            $stmt->close();
-            $mysqli->close();
-          }
-          else if(isset($_POST['selection']) && $_POST['selection'] == "noMember"){
-            echo "News an registrierte Abonnenten senden:";
-            include ("../connection.php");
-            $sqlReq = "SELECT mail FROM fans WHERE clubmember = 0";
-            $stmt = $mysqli->prepare($sqlReq);
-            if(  $stmt->execute()){
-              $stmt->bind_result($result);
-
-              echo "<table>";
-                 while ($stmt->fetch()) {
-                     echo "<tr><td><input type='checkbox' name='memberCheckBox[]' value='$result'> $result</td></tr>";
-                 }
-              echo "</table>";
-            }
-            $stmt->close();
-            $mysqli->close();
-          }*/
-        
        ?>
-			
-   		</div>
+    </div>
 		<div id='text'>
 				<table>
 					<tr>
 						<td> BETREFF</td> <td> <input type='text' name='subject'/> </td>
 					</tr>
 					<tr>
-						<td> NACHRICHT  </td> <td> <input style="height: 300px;"  type='text' name='message'/> </td>
+						<td style="padding-right:15px">NACHRICHT</td> <td> <input style="height: 300px;"  type='text' name='message'/> </td>
 					</tr>
 		  		</table>
           <input type='submit' name='send' value='Absenden'>
-			
+			</form>
 		</div>
-		</form>
 	</body>
 </html>

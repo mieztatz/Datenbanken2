@@ -28,12 +28,10 @@
   $mail = !empty($_POST['mail']) ? $_POST['mail'] : noinput();
   $_SESSION['mail'] = $mail;
   if(isset($_POST['registration'])){
-    //checkMail();
   	newUser($mail);
     showAllLeagues();
   }
   else{
-    //checkMail();
     showUserSpecificLeagues($mail);
   }
 
@@ -100,11 +98,6 @@ function showUserSpecificLeagues($mail){
       echo "<b>Fehler bei der Registrierung.</b>";
       exit();
     }
-  }
-
-  function checkMail(){
-    $mail = !empty($_POST['mail']) ? $_POST['mail'] : noinput();
-    $_SESSION['mail'] = $mail;
   }
 
   function noinput() {
