@@ -19,27 +19,22 @@
 				<li class='active'><a href='sendNewsletter.php'>Newsletter verschicken</a></li>
 			</ul>
 		</div>
-
+		<form name="newstext" method="POST" action="newsresult.php">
 		<div id='text'>
 			<h1> NEWSLETTER ABSENDEN</h1>
 			<p> Es gibt Neuigkeiten? </p>
 			<p> Sende hier den Newsletter ab</p>
-      <form name="selectionSend" method="POST">
+      
 			<p> Wenn willst du den Newsletter senden? <select name="selection">
 										<option value="member"> Vereinsmitglieder
 										<option value="noMember"> keine Vereinsmitglieder
-                    <option value="allMember"> alle Abonnenten
-                    <option value="leagues"> Fußballligen
+                    					<option value="allMember"> Vereinsmitgliedschaft egal 
 									</select>
 			</p>
-      <input type='submit' name='selected' value='auswählen'>
-      </form>
-
-      <form name="newstext" method="POST" action="newsresult.php">
-
+    
         <?php
-          if(isset($_POST['selected'])){
-            if(isset($_POST['selection']) && $_POST['selection'] == "leagues"){
+          
+           
             echo "	An welche Fußballkatagorie soll der Newsletter verschickt werden?";
             include ("../connection.php");
             $sqlReq = "SELECT * FROM league";
@@ -54,8 +49,8 @@
             }
             $stmt->close();
             $mysqli->close();
-          }
-          else if(isset($_POST['selection']) && $_POST['selection'] == "allMember"){
+         
+          /*else if(isset($_POST['selection']) && $_POST['selection'] == "allMember"){
             echo "News an registrierte Abonnenten senden:";
             include ("../connection.php");
             $sqlReq = "SELECT mail FROM fans";
@@ -105,10 +100,11 @@
             }
             $stmt->close();
             $mysqli->close();
-          }
-        }
+          }*/
+        
        ?>
-    </div>
+			
+   		</div>
 		<div id='text'>
 				<table>
 					<tr>
@@ -119,7 +115,8 @@
 					</tr>
 		  		</table>
           <input type='submit' name='send' value='Absenden'>
-			</form>
+			
 		</div>
+		</form>
 	</body>
 </html>
