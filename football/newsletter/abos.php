@@ -17,35 +17,38 @@
         <li><a href='../newsletter/sendNewsletter.php'>Newsletter verschicken(eingeschränkt)</a></li>
 			</ul>
 		</div>
-
-
 <?php
 
-  if(isset($_SESSION['mail']) && isset($_POST['leagueCheckBox'])){
+  if(isset($_SESSION['mail'])){
     $mail = $_SESSION['mail'];
-    $leagues = $_POST['leagueCheckBox'];
+    session_destroy();
     include ("../connection.php");
-  //  print_r($_SESSION['mail']);
-  //  print_r($_POST['leagueCheckBox']);
-    $success = TRUE;
-    $sqlIns = "INSERT IGNORE INTO `newsletter` (`mail`, `leaguenews`) VALUES (?,?)";
-    $stmt = $mysqli->prepare($sqlIns);
-    $stmt->bind_param("ss",$mail,$league);
     $sqlDel = "DELETE FROM newsletter WHERE mail = '$mail'";
-    foreach($leagues as $league){
-      if($stmt->execute()){
-        $sqlDel .= " AND leaguenews <> '".$league."'";
-        $success &= TRUE;
+    $success = TRUE;
+    if(isset($_POST['leagueCheckBox'])){
+      $leagues = $_POST['leagueCheckBox'];
+    //  print_r($_SESSION['mail']);
+    //  print_r($_POST['leagueCheckBox']);
+
+      $sqlIns = "INSERT IGNORE INTO `newsletter` (`mail`, `leaguenews`) VALUES (?,?)";
+      $stmt = $mysqli->prepare($sqlIns);
+      $stmt->bind_param("ss",$mail,$league);
+
+      foreach($leagues as $league){
+        if($stmt->execute()){
+          $sqlDel .= " AND leaguenews <> '".$league."'";
+          $success &= TRUE;
+        }
+        else{
+          $success &= FALSE;
+        }
       }
-      else{
-        $success &= FALSE;
-      }
+      $stmt->close();
     }
-    $stmt->close();
     if($success){
       $stmt = $mysqli->prepare($sqlDel);
-
       if($stmt->execute()){
+        $stmt->close();
         echo "<div id='text'>Ihre Daten wurden erfolgreich aktualisiert.</div>";
       }
       else{
@@ -55,9 +58,8 @@
     else{
       echo "<div id='text'>Fehler bei der Aktuallisierung der Daten.</div>";
     }
+    $mysqli->close();
   }
-  session_destroy();
-  $mysqli->close();
 ?>
 
 </body>

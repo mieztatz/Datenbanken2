@@ -15,7 +15,7 @@
   				<li><a href='index.php'>Voting</a></li>
    				<li class='active'><a href='result.php'>Results</a></li>
 				<li><a href='../newsletter/newsletter.php'>Newsletter</a></li>
-				<li><a href='../newsletter/sendNewsletter.php'>Newsletter verschicken(eingeschränkt)</a></li>
+				<li><a href='../newsletter/sendNewsletter.php'>Newsletter verschicken</a></li>
 			</ul>
 		</div>
 

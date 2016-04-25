@@ -14,7 +14,7 @@
         <li><a href='../vote/index.php'>Voting</a></li>
         <li><a href='../vote/result.php'>Results</a></li>
         <li class='active'><a href='newsletter.php'>Newsletter</a></li>
-        <li><a href='../newsletter/sendNewsletter.php'>Newsletter verschicken(eingeschränkt)</a></li>
+        <li><a href='../newsletter/sendNewsletter.php'>Newsletter verschicken</a></li>
 			</ul>
 		</div>
 
@@ -74,8 +74,7 @@ function showUserSpecificLeagues($mail){
     include ("../connection.php");
     $sqlReq = "SELECT * FROM league";
     $stmt = $mysqli->prepare($sqlReq);
-    if($stmt){
-      $stmt->execute();
+    if($stmt->execute()){
       $stmt->bind_result($result);
 
       echo "<table>";

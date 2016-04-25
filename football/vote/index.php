@@ -5,9 +5,9 @@
 		<title> FUSSBALLVEREINE </title>
  		<meta name="viewport" content="width=device-width, initial-scale=1">
   		<link rel="stylesheet" href="../styles.css">
-   		
-  
-		
+
+
+
 	</head>
 	<body>
 		<div id='cssmenu'>
@@ -16,7 +16,7 @@
   				<li class='active'><a href='index.php'>Voting</a></li>
    				<li><a href='result.php'>Results</a></li>
 				<li><a href='../newsletter/newsletter.php'>Newsletter</a></li>
-				<li><a href='../newsletter/sendNewsletter.php'>Newsletter verschicken(eingeschränkt)</a></li>
+				<li><a href='../newsletter/sendNewsletter.php'>Newsletter verschicken</a></li>
 			</ul>
 		</div>
 		<div id='text'>

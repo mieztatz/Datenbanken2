@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="de">
+    <head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<title> FUSSBALLVEREINE </title>
+ 		<meta name="viewport" content="width=device-width, initial-scale=1">
+  		<link rel="stylesheet" href="../styles.css">
+
+
+
+	</head>
+	<body>
+		<div id='cssmenu'>
+			<ul>
+				<li><a href='../index.html'>Willkommen</a><li>
+  				<li><a href='../vote/index.php'>Voting</a></li>
+   				<li><a href='../vote/result.php'>Results</a></li>
+				<li><a href='newsletter.php'>Newsletter</a></li>
+				<li class='active'><a href='sendNewsletter.php'>Newsletter verschicken</a></li>
+			</ul>
+		</div>
+
+		<div id='text'>
+			<h1> NEWSLETTER ABGESENDET</h1>
+			<p> Der Newsletter wurde an folgende Benutzer geschickt: </p>
+
+      <?php
+      if(isset($_POST['leagueCheckBox'])){
+        $leagues = $_POST['leagueCheckBox'];
+            include ("../connection.php");
+            $sqlReq = "SELECT mail FROM newsletter WHERE leaguenews = ?";
+
+            $stmt = $mysqli->prepare($sqlReq);
+            $stmt->bind_param("s",$league);
+            echo "<table>";
+            foreach($leagues as $league){
+              if($stmt->execute()){
+                $stmtResult = $stmt->get_result();
+                $resultLeag= $stmtResult->fetch_all(MYSQLI_ASSOC);
+                $tmp = array_column($resultLeag,'mail');
+                foreach($tmp as $value){
+                  echo "<tr><td>$value</td></tr>";
+                }
+              }
+            }
+            echo "</table>";
+
+            $stmt->close();
+            $mysqli->close();
+        }
+        else{
+          $members = $_POST['memberCheckBox'];
+             echo "<table>";
+             foreach($members as $member){
+                     echo "<tr><td>$member</td></tr>";
+              }
+              echo "</table>";
+          }
+
+       ?>
+    </div>
+	</body>
+</html>

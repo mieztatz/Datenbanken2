@@ -13,7 +13,7 @@
   				<li><a href='../vote/index.php'>Voting</a></li>
    				<li><a href='../vote/result.php'>Results</a></li>
 				  <li class='active'><a href='newsletter.php'>Newsletter</a></li>
-          <li><a href='../newsletter/sendNewsletter.php'>Newsletter verschicken(eingeschränkt)</a></li>
+          <li><a href='../newsletter/sendNewsletter.php'>Newsletter verschicken</a></li>
 			</ul>
 		</div>
 		<h1> Newsletter/Mailinglisten abnonieren </h1>
