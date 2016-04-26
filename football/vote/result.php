@@ -23,51 +23,34 @@
 		<h1> VOTING-ERGEBNISSE </h1>
 			<?php
 				include ("../connection.php");
-				//Schritt 2: Statement vorbereiten
-				$stmt = $mysqli->prepare("SELECT * FROM teams");
-				$sumVots = $mysqli->prepare("SELECT SUM(vote) AS summe FROM teams");
-
-				//Variablen müssen hier nicht eingebunden werden
-
-				// Schritt 5: Query ausführen
-				if($stmt->execute()){
-					$result = $stmt->get_result();
+				$stmtCalc = $mysqli->prepare("SELECT teamname, ROUND(vote/(SELECT SUM(vote) AS summe FROM teams)*100,2) AS percentage FROM teams");
+				
+				if($stmtCalc->execute()){
+					$result = $stmtCalc->get_result();
 					$array = $result->fetch_all(MYSQLI_ASSOC);
 
 				} else {
 					error_log("Anfrage nicht erfolgreich.");
 				}
-				if($sumVots->execute()){
-					$voteResults = $sumVots->get_result();
-					$vots = $voteResults->fetch_all(MYSQLI_ASSOC);
-
-				} else {
-					error_log("Anfrage nicht erfolgreich.");
-				}
-
 				echo "<p><table>
 					<tr>
 						<td align=left><b>VEREIN</b></td>
 						<td align=center><b>VOTES</b></td>
 					</tr>";
-						//print_r($vots[0]['summe']);
 						echo "<br />";
-						//print_r($array);
 						foreach($array as $value) {
-
-								echo "<tr><td style='padding-right:15px' align=left>". $value['teamname']. "</td>";
-								$tmp = number_format($value['vote']/$vots[0]['summe']*100,2);
-								echo "<td align=right>". $tmp. "%</td></tr>";
-							}
+							echo "<tr><td style='padding-right:15px' align=left>";
+							echo $value['teamname'];
+							echo "</td><td align=right>";
+							echo $value['percentage'];
+							echo "%</td></tr>";
+						}
 						echo "</tr>";
 
 
 				echo "</table></p>";
-
-				$stmt->close();
-
+				$stmtCalc->close();
 				$mysqli->close();
-
 			?>
 		</div>
 	</body>
