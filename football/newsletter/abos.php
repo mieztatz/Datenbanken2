@@ -50,6 +50,7 @@
       if($stmt->execute()){
         $stmt->close();
         echo "<div id='text'>Ihre Daten wurden erfolgreich aktualisiert.</div>";
+        header("Refresh: 3; url=newsletter.php");
       }
       else{
           echo "<div id='text'>Fehler bei der Aktuallisierung der Daten.</div>";

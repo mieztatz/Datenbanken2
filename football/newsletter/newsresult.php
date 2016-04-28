@@ -50,21 +50,22 @@ ls /<!doctype html>
           $stmt->bind_param("s",$league);
           echo "<table>";
           foreach($leagues as $league){
-            echo "<tr><td style='padding-right:5px'>Newsletter <b>".$league." </b>an:</td>";
+            echo "<tr><td style='padding-right:5px'>Newsletter <b>$league</b> an:</td>";
             if($stmt->execute()){
               $stmtResult = $stmt->get_result();
               $resultLeag= $stmtResult->fetch_all(MYSQLI_ASSOC);
               if(!empty($resultLeag)){
                 $tmp = array_column($resultLeag,'mail');
+                echo "<td>";
                 foreach($tmp as $value){
                   if($value != array_slice($tmp, -1)[0]){
-                    echo "<td style='padding-right:5px'>".$value.",</td>";
+                    echo "$value, ";
                   }
                   else {
-                      echo "<td style='padding-right:5px'>".$value."</td>";
+                      echo $value;
                   }
                 }
-                echo "</tr>";
+                echo "</td></tr>";
               }
               else{
                 echo "<td> zur Zeit abonniert keiner diesen Newsletter.</td></tr>";

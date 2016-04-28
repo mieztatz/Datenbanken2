@@ -24,7 +24,7 @@
 			<?php
 				include ("../connection.php");
 				$stmtCalc = $mysqli->prepare("SELECT teamname, ROUND(vote/(SELECT SUM(vote) AS summe FROM teams)*100,2) AS percentage FROM teams");
-				
+
 				if($stmtCalc->execute()){
 					$result = $stmtCalc->get_result();
 					$array = $result->fetch_all(MYSQLI_ASSOC);

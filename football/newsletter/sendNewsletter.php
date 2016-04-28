@@ -32,7 +32,7 @@
 									</select>
 			</p>
       <?php
-          echo "An welche Fußballkatagorie soll der Newsletter verschickt werden?";
+          echo "An welche Fußballkategorie soll der Newsletter verschickt werden?";
             include ("../connection.php");
             $sqlReq = "SELECT * FROM league";
             $stmt = $mysqli->prepare($sqlReq);
@@ -54,7 +54,7 @@
 						<td> BETREFF</td> <td> <input type='text' name='subject'/> </td>
 					</tr>
 					<tr>
-						<td style="padding-right:15px">NACHRICHT</td> <td> <input style="height: 300px;"  type='text' name='message'/> </td>
+						<td style="padding-right:15px">NACHRICHT</td> <td> <input style="height: 30px;"  type='text' name='message'/> </td>
 					</tr>
 		  		</table>
           <input type='submit' name='send' value='Absenden'>
