@@ -1,0 +1,54 @@
+create or replace TYPE Adresse_t AS OBJECT(
+Strasse  VARCHAR2(30),
+HNR INTEGER,
+PLZ INTEGER,
+Ort VARCHAR2(20)) NOT FINAL;
+
+create or replace TYPE Konto_t AS OBJECT(
+KNR INTEGER,
+Kontostand  NUMBER(10,2),
+Typ INTEGER(1)) NOT FINAL;
+
+create type kontenliste as table of REF Konto_t;
+
+create or replace TYPE Person_t AS OBJECT(
+Kd_NR INTEGER,
+Nachname  VARCHAR2(20),
+Vorname   VARCHAR2(20),
+Adresse REF  Adresse_t,
+Status  INTEGER(1),
+Konten  Kontenliste) NOT FINAL;
+
+create or replace TYPE Zweigstelle_t AS OBJECT(
+ZName VARCHAR(20),
+Adresse  REF Adresse_t,
+Leiter    INTEGER,
+Konten    Kontenliste) NOT FINAL;
+
+
+
+
+CREATE TABLE Adressen OF Adresse_t;
+CREATE TABLE Konten OF Konto_t;
+
+create table Kunden of Person_t
+nested table konten
+store as konten_kd;
+
+create table Zweigstellen of Zweigstelle_t
+nested table konten
+store as konten_zweigst;
+
+
+
+
+
+
+INSERT INTO ADRESSEN VALUES ('Simseestr.','3','80800','Musterhausen');
+INSERT INTO ADRESSEN VALUES ('Schellingstr.','42','05362','Hasenbüttel');
+
+Insert into KONTEN values ('120768','234,56','0');
+
+insert into zweigstellen values ('Bachdorf',(SELECT REF(adr) FROM ADRESSEN adr WHERE adr.strasse = 'Hochstr.'),'1768',Kontenliste()); // noch nicht umgesetzt
+
+select deref(k.adresse).strasse as Strasse, deref(k.adresse).hnr as Hausnummer from kunden k; //testabfrage
