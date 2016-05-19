@@ -1,3 +1,4 @@
+//Typen erzeugen
 create or replace TYPE Adresse_t AS OBJECT(
 Strasse  VARCHAR2(30),
 HNR INTEGER,
@@ -26,8 +27,7 @@ Leiter    INTEGER,
 Konten    Kontenliste) NOT FINAL;
 
 
-
-
+//Tabellen erzeugen
 CREATE TABLE Adressen OF Adresse_t;
 CREATE TABLE Konten OF Konto_t;
 
@@ -40,15 +40,20 @@ nested table konten
 store as konten_zweigst;
 
 
-
-
-
-
+//Adressen einfügen
 INSERT INTO ADRESSEN VALUES ('Simseestr.','3','80800','Musterhausen');
 INSERT INTO ADRESSEN VALUES ('Schellingstr.','42','05362','Hasenbüttel');
 
+//Konten einfügen
 Insert into KONTEN values ('120768','234,56','0');
 
+//Kunden mit zugehörigen Konten einfügen
+insert into kunden values (PERSON_T('2345','Fach','Hans',(SELECT REF(adr) FROM Adressen adr WHERE adr.STRASSE = 'Münchnerstr.'),'0',Kontenliste()))
+insert into Table (SELECT konten From Kunden WHERE Kd_Nr = '2345')(SELECT REF(k) FROM Konten k WHERE k.KNR = '120768' OR k.KNR = '348973') //befüllen der Nested Table bei mehreren Referenzen
+
+insert into kunden values (PERSON_T('7654','Meier','Bernd',(SELECT REF(adr) FROM Adressen adr WHERE adr.STRASSE = 'Eschenweg'),'1',Kontenliste((SELECT REF(k) FROM Konten k WHERE k.KNR = '987654')))); //befüllen der Nested Table bei nur einer Referenz, wenn es mehrere Referenzen sind, dann müssste man bei dieser Variante mehrere SELECT-Statments eintragen und diese mit Komma trennen
+
+//Zweigstellen mit zugehörigen Konten eingüfen
 insert into zweigstellen values ('Bachdorf',(SELECT REF(adr) FROM ADRESSEN adr WHERE adr.strasse = 'Hochstr.'),'1768',Kontenliste()); // noch nicht umgesetzt
 
 select deref(k.adresse).strasse as Strasse, deref(k.adresse).hnr as Hausnummer from kunden k; //testabfrage

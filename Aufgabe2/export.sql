@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  Datei erstellt -Dienstag-Mai-10-2016   
+--  Datei erstellt -Donnerstag-Mai-19-2016   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Type ADRESSE_T
@@ -47,10 +47,10 @@ Konten  Kontenliste) NOT FINAL;
 --------------------------------------------------------
 
   CREATE OR REPLACE TYPE "DBST47"."ZWEIGSTELLE_T" AS OBJECT(
-ZName VARCHAR(20),
-Adresse  REF Adresse_t,
-Leiter    INTEGER,
-Konten    Kontenliste) NOT FINAL;
+ZName VARCHAR2(20),
+Adresse REF Adresse_t,
+Leiter   Integer,
+Konten  Kontenliste) NOT FINAL;
 
 /
 --------------------------------------------------------
@@ -153,8 +153,9 @@ REM INSERTING into DBST47.ADRESSEN
 SET DEFINE OFF;
 Insert into DBST47.ADRESSEN (STRASSE,HNR,PLZ,ORT) values ('Simseestr.','3','80800','Musterhausen');
 Insert into DBST47.ADRESSEN (STRASSE,HNR,PLZ,ORT) values ('Hochstr.','1','80000','Münchhausen');
+Insert into DBST47.ADRESSEN (STRASSE,HNR,PLZ,ORT) values ('Eschenweg','12','80335','München');
 Insert into DBST47.ADRESSEN (STRASSE,HNR,PLZ,ORT) values ('Münchnerstr.','33','80801','München');
-Insert into DBST47.ADRESSEN (STRASSE,HNR,PLZ,ORT) values ('Schellingstr.','42','5362','Hasenbüttel');
+Insert into DBST47.ADRESSEN (STRASSE,HNR,PLZ,ORT) values ('Schellingstr.','42','53620','Hasenbüttel');
 REM INSERTING into DBST47.KONTEN
 SET DEFINE OFF;
 Insert into DBST47.KONTEN (KNR,KONTOSTAND,TYP) values ('120768','234,56','0');
@@ -164,8 +165,13 @@ Insert into DBST47.KONTEN (KNR,KONTOSTAND,TYP) values ('987654','789,65','1');
 Insert into DBST47.KONTEN (KNR,KONTOSTAND,TYP) values ('745363','-23,67','0');
 REM INSERTING into DBST47.KUNDEN
 SET DEFINE OFF;
+Insert into DBST47.KUNDEN (KD_NR,NACHNAME,VORNAME,ADRESSE,STATUS,KONTEN) values ('2345','Fach','Hans','DBST47.ADRESSE_T(''Münchnerstr.'',33,80801,''München'')','0',DBST47.KONTENLISTE(DBST47.KONTO_T(120768,234.56,0),DBST47.KONTO_T(348973,12567.56,1)));
+Insert into DBST47.KUNDEN (KD_NR,NACHNAME,VORNAME,ADRESSE,STATUS,KONTEN) values ('7654','Meier','Bernd','DBST47.ADRESSE_T(''Eschenweg'',12,80335,''München'')','1',DBST47.KONTENLISTE(DBST47.KONTO_T(987654,789.65,1)));
+Insert into DBST47.KUNDEN (KD_NR,NACHNAME,VORNAME,ADRESSE,STATUS,KONTEN) values ('8764','Wiesner','Jan','DBST47.ADRESSE_T(''Schellingstr.'',42,53620,''Hasenbüttel'')','1',DBST47.KONTENLISTE(DBST47.KONTO_T(348973,12567.56,1),DBST47.KONTO_T(678453,-456.78,1),DBST47.KONTO_T(745363,-23.67,0)));
 REM INSERTING into DBST47.ZWEIGSTELLEN
 SET DEFINE OFF;
+Insert into DBST47.ZWEIGSTELLEN (ZNAME,ADRESSE,LEITER,KONTEN) values ('Bachdorf','DBST47.ADRESSE_T(''Hochstr.'',1,80000,''Münchhausen'')','1768',DBST47.KONTENLISTE(DBST47.KONTO_T(120768,234.56,0),DBST47.KONTO_T(348973,12567.56,1),DBST47.KONTO_T(678453,-456.78,1)));
+Insert into DBST47.ZWEIGSTELLEN (ZNAME,ADRESSE,LEITER,KONTEN) values ('Riedering','DBST47.ADRESSE_T(''Simseestr.'',3,80800,''Musterhausen'')','9823',DBST47.KONTENLISTE(DBST47.KONTO_T(987654,789.65,1),DBST47.KONTO_T(745363,-23.67,0)));
 --------------------------------------------------------
 --  Constraints for Table KUNDEN
 --------------------------------------------------------
@@ -204,13 +210,13 @@ SET DEFINE OFF;
 --------------------------------------------------------
 
   ALTER TABLE "DBST47"."ZWEIGSTELLEN" ADD UNIQUE ("KONTEN")
-  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 
   STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
   PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT)
   TABLESPACE "USERS"  ENABLE;
  
   ALTER TABLE "DBST47"."ZWEIGSTELLEN" ADD UNIQUE ("SYS_NC_OID$")
-  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 
   STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
   PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT)
   TABLESPACE "USERS"  ENABLE;
