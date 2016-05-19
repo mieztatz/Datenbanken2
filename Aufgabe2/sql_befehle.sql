@@ -101,3 +101,17 @@ Insert into ZWEIGSTELLEN values ('Bachdorf',(SELECT REF(adr) FROM ADRESSEN adr W
 Insert into TABLE (SELECT KONTEN From ZWEIGSTELLEN WHERE ZNAME = 'Bachdorf')(SELECT REF(k) FROM KONTEN k WHERE k.KNR = '120768' OR k.KNR = '348973' OR k.KNR = '678453');
 Insert into ZWEIGSTELLEN values ('Riedering',(SELECT REF(adr) FROM ADRESSEN adr WHERE adr.strasse = 'Simseestr.'),'9823',Kontenliste());
 Insert into TABLE (SELECT KONTEN From ZWEIGSTELLEN WHERE ZNAME = 'Riedering')(SELECT REF(k) FROM KONTEN k WHERE k.KNR = '745363' OR k.KNR = '987654');
+
+--------------------------------------------------------
+--  SELECT Statement gibt "alle Kontonummern mit Konostand, Art und Adresse der Zweigstelle" aus
+--------------------------------------------------------
+SELECT z.ZNAME AS Zweigstellenname, DEREF(z.ADRESSE).STRASSE AS Straße, DEREF(z.ADRESSE).HNR AS Hausnummer, DEREF(z.ADRESSE).PLZ AS PLZ, DEREF(z.ADRESSE).ORT AS ORT, DEREF(k.COLUMN_VALUE).KNR AS Kontonummer, DEREF(k.COLUMN_VALUE).KONTOSTAND AS Kontonstand FROM ZWEIGSTELLEN z, TABLE(z.KONTEN) k;
+
+-- Result
+ZWEIGSTELLENNAME     STRAßE                         HAUSNUMMER        PLZ ORT                  KONTONUMMER KONTONSTAND
+-------------------- ------------------------------ ---------- ---------- -------------------- ----------- -----------
+Bachdorf             Hochstr.                                1      80000 Münchhausen               120768      234,56 
+Bachdorf             Hochstr.                                1      80000 Münchhausen               348973    12567,56 
+Bachdorf             Hochstr.                                1      80000 Münchhausen               678453     -456,78 
+Riedering            Simseestr.                              3      80800 Musterhausen              987654      789,65 
+Riedering            Simseestr.                              3      80800 Musterhausen              745363      -23,67 
