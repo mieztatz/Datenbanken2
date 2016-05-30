@@ -1,11 +1,11 @@
 --------------------------------------------------------
---  DDL for Type PHONENUMBERLIST
+--  DDL for Type PHONENUMBERLIST (NESTED TABLE in CONTACT)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "PHONENUMBERLIST" as table of VARCHAR2(12);
 
 /
 --------------------------------------------------------
---  DDL for Type CONTACT_T
+--  DDL for Type CONTACT_T (GLOBALE TABLE)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "CONTACT_T" AS OBJECT(
 Street  VARCHAR2(30),
@@ -17,7 +17,7 @@ Fax VARCHAR2(12)) NOT FINAL;
 
 /
 -----------------------------------------------------
---  DDL for Type SHAREHOLDER_T
+--  DDL for Type SHAREHOLDER_T (GLOBALE TABLE)
 -----------------------------------------------------
 CREATE OR REPLACE TYPE "SHAREHOLDER_T" AS OBJECT(
 Sholder_ID  INTEGER,
@@ -26,7 +26,7 @@ Sholder_Contact REF Contact_T) NOT FINAL;
 
 /
 --------------------------------------------------------
---  DDL for Type OWN_SHARES_T
+--  DDL for Type OWN_SHARES_T 
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "OWN_SHARES_T" AS OBJECT(
 Sholder_ID REF Shareholder_t,
@@ -34,46 +34,47 @@ Share_Amount INTEGER) NOT FINAL;
 
 /
 --------------------------------------------------------
---  DDL for Type SHAREHOLDERLIST
+--  DDL for Type SHAREHOLDERLIST (NESTED TABLE in COMPANY)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "SHAREHOLDERLIST" as table of Own_Shares_t;
 
 /
 --------------------------------------------------------
---  DDL for Type DIRECTORS
+--  DDL for Type MANAGEMENT_T (GLOBALE TABLE)
 --------------------------------------------------------
-  CREATE OR REPLACE TYPE "DIRECTORS" as table of INTEGER;
+  CREATE OR REPLACE TYPE "MANAGEMENT_T" AS OBJECT(
+Manag_ID INTEGER,
+Manag_Name VARCHAR2(30),
+Manag_Contact REF Contact_T) NOT FINAL;
+
+/
+--------------------------------------------------------
+--  DDL for Type DIRECTOR_T
+--------------------------------------------------------
+  CREATE OR REPLACE TYPE "DIRECTOR_T" AS OBJECT(
+Manag_ID REF Management_t,
+Bonus INTEGER) NOT FINAL;
+
+/
+--------------------------------------------------------
+--  DDL for Type DIRECTORLIST (NESTED TABLE in COMPANY)
+--------------------------------------------------------
+  CREATE OR REPLACE TYPE "DIRECTORLIST" as table of Director_t;
 
 /
 --------------------------------------------------------
 --  DDL for Type MANAGER_T
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "MANAGER_T" AS OBJECT(
+Manag_ID REF Management_t, 
 Manag_Type VARCHAR2(30),
 Yearly_Salary VARCHAR2(10)) NOT FINAL;
 
 /
 --------------------------------------------------------
---  DDL for Type MANAGERLIST
+--  DDL for Type MANAGERLIST (NESTED TABLE in COMPANY)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "MANAGERLIST" as table of Manager_t;
-
-/
---------------------------------------------------------
---  DDL for Type MANAGEMENT_T
---------------------------------------------------------
-  CREATE OR REPLACE TYPE "MANAGEMENT_T" AS OBJECT(
-Manag_ID INTEGER,
-Manag_Name VARCHAR2(30),
-Manag_Contact REF Contact_T,
-Manag_Typ_Director DIRECTORS,
-Manag_Typ_Manager MANAGERLIST) NOT FINAL;
-
-/
---------------------------------------------------------
---  DDL for Type MANAGEMENTLIST
---------------------------------------------------------
-  CREATE OR REPLACE TYPE "MANAGEMENTLIST" as table of Management_t;
 
 /
 --------------------------------------------------------
@@ -108,7 +109,7 @@ Emp_Contact REF Contact_T) NOT FINAL;
 
 /
 --------------------------------------------------------
---  DDL for Type EMPLOYEELIST
+--  DDL for Type EMPLOYEELIST (NESTED TABLE in DEPARTMENT)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "EMPLOYEELIST" as table of Employee_t;
 
@@ -124,13 +125,13 @@ Dept_Employees EMPLOYEELIST) NOT FINAL;
 
 /
 --------------------------------------------------------
---  DDL for Type DEPARTMENTS
+--  DDL for Type DEPARTMENTS (NESTED TABLE in STORE)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "DEPARTMENTLIST" as table of Department_t;
 
 /
 --------------------------------------------------------
---  DDL for Type TRANSACTION_T
+--  DDL for Type TRANSACTION_T (GLOBALE TABLE)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "TRANSACTION_T" AS OBJECT(
 Trans_ID INTEGER,
@@ -140,13 +141,13 @@ Quantity INTEGER) NOT FINAL;
 
 /
 --------------------------------------------------------
---  DDL for Type TRANSACTIONLIST
+--  DDL for Type TRANSACTIONLIST (NESTED TABLE in ITEM)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "TRANSACTIONLIST" as table of REF Transaction_t;
   
 /
 --------------------------------------------------------
---  DDL for Type ITEM_T
+--  DDL for Type ITEM_T (GLOBALE TABLE)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "ITEM_T" AS OBJECT(
 Item_ID VARCHAR2(5),
@@ -158,7 +159,7 @@ Item_Trans TRANSACTIONLIST) NOT FINAL;
 
 /
 --------------------------------------------------------
---  DDL for Type ITEMLIST
+--  DDL for Type ITEMLIST (NESTED TABLE in MAKER)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "ITEMLIST" as table of REF Item_t;
   
@@ -172,7 +173,7 @@ Item_Stock INTEGER) NOT FINAL;
 
 /
 --------------------------------------------------------
---  DDL for Type AVAILABLELIST
+--  DDL for Type AVAILABLELIST (NESTED TABLE in STORE)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "AVAILABLELIST" as table of Available_In_t;
   
@@ -190,13 +191,13 @@ Store_Items AVAILABLELIST) NOT FINAL;
 
 /
 --------------------------------------------------------
---  DDL for Type STORELIST
+--  DDL for Type STORELIST (NESTED TABLE in COMPANY)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "STORELIST" as table of Store_t;
 
 /
 --------------------------------------------------------
---  DDL for Type CUSTOMER_T
+--  DDL for Type CUSTOMER_T (GLOBALE TABLE)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "CUSTOMER_T" AS OBJECT(
 Cust_ID VARCHAR2(5),
@@ -209,7 +210,7 @@ Cust_Trans TRANSACTIONLIST) NOT FINAL;
   
 /
 --------------------------------------------------------
---  DDL for Type MAKER_T
+--  DDL for Type MAKER_T (GLOBALE TABLE)
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "MAKER_T" AS OBJECT(
 Maker_ID VARCHAR2(5),
@@ -240,7 +241,7 @@ Market  VARCHAR2(10)) NOT FINAL;
   
 /
 --------------------------------------------------------
---  DDL for Type COMPANY_T
+--  DDL for Type COMPANY_T (GLOBALE TABLE)
 --------------------------------------------------------
 CREATE OR REPLACE TYPE "COMPANY_T" AS OBJECT(
 Comp_ID  INTEGER,
@@ -248,7 +249,8 @@ Comp_Name VARCHAR2(20),
 Comp_Contact REF Contact_T,
 Comp_Type COMP_TYPE_T,
 Comp_Sholders SHAREHOLDERLIST,
-Comp_Manag MANAGEMENTLIST,
+Comp_Manager MANAGERLIST,
+Comp_Directors DIRECTORLIST,
 Comp_Stores STORELIST) NOT FINAL;
 
 
@@ -263,6 +265,44 @@ Comp_Stores STORELIST) NOT FINAL;
 --------------------------------------------------------
   CREATE TABLE "SHAREHOLDERS" OF "SHAREHOLDER_T"; 
   
+--------------------------------------------------------
+--  DDL for Table MANAGEMENT
+--------------------------------------------------------
+  CREATE TABLE "MANAGEMENT" OF "MANAGEMENT_T"; 
+  
+--------------------------------------------------------
+--  DDL for Table ITEMS
+--------------------------------------------------------
+  CREATE TABLE "ITEMS" OF "ITEM_T"
+  NESTED TABLE "ITEM_TRANS" STORE AS "TRANSACTIONS_ITEM"; 
+  
+--------------------------------------------------------
+--  DDL for Table TRANSACTIONS
+--------------------------------------------------------
+  CREATE TABLE "TRANSACTIONS" OF "TRANSACTION_T"; 
+  
+--------------------------------------------------------
+--  DDL for Table MAKER
+--------------------------------------------------------
+  CREATE TABLE "MAKER" OF "MAKER_T"
+  NESTED TABLE "ITEMS" STORE AS "ITEMS_MAKER"; 
+  
+--------------------------------------------------------
+--  DDL for Table CUSTOMERS
+--------------------------------------------------------
+  CREATE TABLE "CUSTOMERS" OF "CUSTOMER_T"
+  NESTED TABLE "CUST_TRANS" STORE AS "TRANSACTIONS_CUST"; 
+  
+--------------------------------------------------------
+--  DDL for Table COMPANIES
+--------------------------------------------------------
+  CREATE TABLE "COMPANIES" OF "COMPANY_T" 
+  NESTED TABLE "COMP_SHOLDERS" STORE AS "SHOLDRES"
+  NESTED TABLE "COMP_MANAGER" STORE AS "MANAGER" 
+  NESTED TABLE "COMP_DIRECTORS" STORE AS "DIRECTOR"
+  NESTED TABLE "COMP_STORES" STORE AS "STORES" (NESTED TABLE "STORE_DEPTS" STORE AS "DEPARTMENTS_STORE" (NESTED TABLE "DEPT_EMPLOYEES" STORE AS "EMPLOYEES_DEPT")
+												NESTED TABLE "STORE_ITEMS" STORE AS "ITEMS_STORE");
+
 
 
 
