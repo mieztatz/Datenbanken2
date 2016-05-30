@@ -27,8 +27,7 @@ frame=tbrl, %t: top, r, b, l
 
 \maketitle
 
-\section*{Aufgabe 2}
-\subsection*{1. Möglichkeit}
+\section*{Aufgabe 2 (1. Möglichkeit)}
 \begin{lstlisting}
 --------------------------------------------------------
 --  DDL for Type ADRESSE_T
@@ -112,6 +111,7 @@ CREATE TABLE "ZWEIGSTELLEN" OF "ZWEIGSTELLE_T"
 NESTED TABLE "KONTEN" STORE AS "KONTEN_ZWEIGST"
 \end{lstlisting}
 \begin{landscape}
+\section*{Aufgabe 3 (1. Möglichkeit)}
 \begin{lstlisting}
 --------------------------------------------------------
 --  Inserts in Table ADRESSEN
@@ -151,10 +151,11 @@ Insert into TABLE (SELECT KONTEN FROM ZWEIGSTELLEN WHERE ZNAME = 'Bachdorf')(SEL
 Insert into ZWEIGSTELLEN values ('Riedering',(SELECT REF(adr) FROM ADRESSEN adr WHERE adr.strasse = 'Simseestr.'),'9823',Kontenliste());
 Insert into TABLE (SELECT KONTEN FROM ZWEIGSTELLEN WHERE ZNAME = 'Riedering')(SELECT REF(k) FROM KONTEN k WHERE k.KNR = '745363' OR k.KNR = '987654');
 \end{lstlisting}
+\section*{Aufgabe 4 (1. Möglichkeit)}
 \begin{lstlisting}
--------------------------------------------------------------------------------------------------
+--------------------------------------------------------
 --  SELECT Statement gibt "alle Kontonummern mit Konostand, Art und Adresse der Zweigstelle" aus
--------------------------------------------------------------------------------------------------
+--------------------------------------------------------
 SELECT z.ZNAME AS Zweigstellenname, DEREF(z.ADRESSE).STRASSE AS Strasse, DEREF(z.ADRESSE).HNR AS Hausnummer, DEREF(z.ADRESSE).PLZ AS PLZ, DEREF(z.ADRESSE).ORT AS ORT, DEREF(k.COLUMN_VALUE).KNR AS Kontonummer, DEREF(k.COLUMN_VALUE).KONTOSTAND AS Kontonstand, DEREF(k.COLUMN_VALUE).TYP AS Typ FROM ZWEIGSTELLEN z, TABLE(z.KONTEN) k;
 
 --> Result
@@ -173,9 +174,9 @@ Riedering  &        Simseestr. & 3 &  80800 & Musterhausen  &   745363   &   -23
 
 \begin{lstlisting}
 
----------------------------------------------------------------------------------
+--------------------------------------------------------
 --  SELECT Statement gibt "alle Kontonummern mit Adresse aller Kontoinhaber" aus
----------------------------------------------------------------------------------
+--------------------------------------------------------
 SELECT kd.VORNAME AS Vorname, kd.NACHNAME AS Nachname, DEREF(k.COLUMN_VALUE).KNR AS Kontonummer, DEREF(kd.ADRESSE).STRASSE AS Strasse, DEREF(kd.ADRESSE).HNR AS Hausnummer, DEREF(kd.ADRESSE).PLZ AS PLZ, DEREF(kd.ADRESSE).Ort AS ORT FROM KUNDEN kd, TABLE(kd.KONTEN) k;
 
 --> Result
@@ -191,16 +192,10 @@ Jan  &   Wiesner& 745363& Schellingstr.& 42    &  53620& Hasenbuettel   \\
 Jan  &   Wiesner& 348973& Schellingstr.& 42   &   53620& Hasenbuettel     \\     
 Jan   &  Wiesner& 678453& Schellingstr. & 42  &    53620 & Hasenbuettel \\
 \end{tabular}
-\begin{lstlisting}
---------------------------------------------------------
---  SELFJOIN
---------------------------------------------------------
-select kd1.vorname as VORNAME, kd1.nachname as NACHNAME, kd2.vorname, kd2.nachname, deref(k1.COLUMN_VALUE).KNR FROM Kunden kd1, kunden kd2, TABLE(kd1.konten) k1, TABLE(kd2.konten) k2 WHERE deref(k1.COLUMN_VALUE).KNR = deref(k2.COLUMN_VALUE).KNR AND kd1.nachname <> kd2.nachname;
-\end{lstlisting}
 \end{landscape}
 
 \newpage
-\subsection*{2. Möglichkeit}
+\section*{Aufgabe 2 (2. Möglichkeit)}
 \begin{lstlisting}
 --------------------------------------------------------
 --  DDL for Type ADRESSE_T2
@@ -281,6 +276,7 @@ CREATE TABLE "ZWEIGSTELLEN2" OF "ZWEIGSTELLE_T2"
 NESTED TABLE "KONTEN2" STORE AS "KONTEN_ZWEIGST2" (NESTED TABLE "KUNDEN2" STORE AS "KUNDEN_ZWEIGST2");
 \end{lstlisting}
 \begin{landscape}
+\section*{Aufgabe 3 (2. Möglichkeit)}
 \begin{lstlisting}
 --------------------------------------------------------
 --  Inserts in Table ADRESSEN2
@@ -317,10 +313,11 @@ Insert into TABLE (SELECT k.KUNDEN2 FROM ZWEIGSTELLEN2 z, TABLE(z.KONTEN2) k WHE
 --> Insert into TABLE (SELECT k.KUNDEN2 FROM ZWEIGSTELLEN2 z, TABLE(z.KONTEN2) k WHERE z.ZNAME = 'Riedering' AND k.KNR = '745363')(SELECT REF(kd) FROM KUNDEN2 kd WHERE kd.KD_NR = '8764');
 
 \end{lstlisting}
+\section*{Aufgabe 4 (2. Möglichkeit)}
 \begin{lstlisting}
--------------------------------------------------------------------------------------------------
+--------------------------------------------------------
 --  SELECT Statement gibt "alle Kontonummern mit Konostand, Art und Adresse der Zweigstelle" aus
--------------------------------------------------------------------------------------------------
+--------------------------------------------------------
 SELECT z.ZNAME AS Filiale, DEREF(z.ADRESSE2).STRASSE AS Strasse, DEREF(z.ADRESSE2).HNR AS Hausnummer, DEREF(z.ADRESSE2).PLZ AS PLZ, DEREF(z.ADRESSE2).ORT AS Ort ,k.KNR AS Kontonummer, k.KONTOSTAND AS Kontostand, k.TYP AS Typ FROM ZWEIGSTELLEN2 z, TABLE(z.KONTEN2) k;
 
 --> Result:
@@ -337,9 +334,9 @@ Riedering    &        Simseestr.    &                          3  &    80800& Mu
 
 \begin{lstlisting}
 
----------------------------------------------------------------------------------
+--------------------------------------------------------
 --  SELECT Statement gibt "alle Kontonummern mit Adresse aller Kontoinhaber" aus
----------------------------------------------------------------------------------
+--------------------------------------------------------
 SELECT DEREF(kd.COLUMN_VALUE).VORNAME AS Vorname, DEREF(kd.COLUMN_VALUE).NACHNAME AS Nachname, DEREF(DEREF(kd.COLUMN_VALUE).ADRESSE).STRASSE AS Strasse, DEREF(DEREF(kd.COLUMN_VALUE).ADRESSE).HNR AS Hausnummer, DEREF(DEREF(kd.COLUMN_VALUE).ADRESSE).PLZ AS PLZ, DEREF(DEREF(kd.COLUMN_VALUE).ADRESSE).ORT AS Ort, k.KNR AS Kontonummer, k.Kontostand AS Kontostand FROM ZWEIGSTELLEN2 z, TABLE(z.KONTEN2) k, TABLE(k.KUNDEN2) kd;
 
 --> Result:
