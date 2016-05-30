@@ -252,7 +252,17 @@ Comp_Manag MANAGEMENTLIST,
 Comp_Stores STORELIST) NOT FINAL;
 
 
-
+--------------------------------------------------------
+--  DDL for Table CONTACT
+--------------------------------------------------------
+  CREATE TABLE "CONTACT" OF "CONTACT_T" 
+  NESTED TABLE "PHONE_NUMBERS" STORE AS "PHONE";
+ 
+--------------------------------------------------------
+--  DDL for Table SHAREHOLDERS
+--------------------------------------------------------
+  CREATE TABLE "SHAREHOLDERS" OF "SHAREHOLDER_T"; 
+  
 
 
 
