@@ -22,7 +22,7 @@ Fax VARCHAR2(12)) NOT FINAL;
 CREATE OR REPLACE TYPE "SHAREHOLDER_T" AS OBJECT(
 Sholder_ID  INTEGER,
 Sholder_Name VARCHAR2(30),
-Sholder_Contact REF Contact_T)) NOT FINAL;
+Sholder_Contact REF Contact_T) NOT FINAL;
 
 /
 --------------------------------------------------------
@@ -50,11 +50,11 @@ Share_Amount INTEGER) NOT FINAL;
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "MANAGER_T" AS OBJECT(
 Manag_Type VARCHAR2(30),
-Yearly_Salary VARCHAR2(10) NOT FINAL;
+Yearly_Salary VARCHAR2(10)) NOT FINAL;
 
 /
 --------------------------------------------------------
---  DDL for Type MANAGER
+--  DDL for Type MANAGERLIST
 --------------------------------------------------------
   CREATE OR REPLACE TYPE "MANAGERLIST" as table of Manager_t;
 
@@ -73,7 +73,7 @@ Manag_Typ_Manager MANAGERLIST) NOT FINAL;
 --------------------------------------------------------
 --  DDL for Type MANAGEMENTLIST
 --------------------------------------------------------
-  CREATE OR REPLACE TYPE "MANAGEMENTLIST" as table of Management_t
+  CREATE OR REPLACE TYPE "MANAGEMENTLIST" as table of Management_t;
 
 /
 --------------------------------------------------------
@@ -82,10 +82,7 @@ Manag_Typ_Manager MANAGERLIST) NOT FINAL;
   CREATE OR REPLACE TYPE "EMPLOYEE_T" AS OBJECT(
 Emp_ID VARCHAR2(5),
 Emp_Name VARCHAR2(30),
-Emp_Contact REF Contact_T,
-Emp_Full_Time FULLTIME,
-Emp_Part_Time PARTTIME,
-Emp_Casual CASUAL) NOT FINAL;
+Emp_Contact REF Contact_T) NOT FINAL;
 
 /
 --------------------------------------------------------
@@ -113,7 +110,7 @@ Emp_Casual CASUAL) NOT FINAL;
 --------------------------------------------------------
 --  DDL for Type EMPLOYEELIST
 --------------------------------------------------------
-  CREATE OR REPLACE TYPE "EMPLOYEELIST" as table of Employee_t
+  CREATE OR REPLACE TYPE "EMPLOYEELIST" as table of Employee_t;
 
 /
 --------------------------------------------------------
@@ -122,46 +119,14 @@ Emp_Casual CASUAL) NOT FINAL;
   CREATE OR REPLACE TYPE "DEPARTMENT_T" AS OBJECT(
 Dept_ID INTEGER,
 Dept_Name VARCHAR2(20),
-Dept_Head VARCHAR2(25)
+Dept_Head VARCHAR2(25),
 Dept_Employees EMPLOYEELIST) NOT FINAL;
 
 /
 --------------------------------------------------------
 --  DDL for Type DEPARTMENTS
 --------------------------------------------------------
-  CREATE OR REPLACE TYPE "DEPARTMENTLIST" as table of Department_t
-
-/
---------------------------------------------------------
---  DDL for Type AVAILABLE_IN_T
---------------------------------------------------------
-  CREATE OR REPLACE TYPE "AVAILABLE_IN_T" AS OBJECT(
-Item_ID REF Item_t,
-Item_Stock INTEGER) NOT FINAL;
-
-/
---------------------------------------------------------
---  DDL for Type AVAILABLELIST
---------------------------------------------------------
-  CREATE OR REPLACE TYPE "AVAILABLELIST" as table of Avaible_In_t
-  
-/
---------------------------------------------------------
---  DDL for Type STORE_T
---------------------------------------------------------
-  CREATE OR REPLACE TYPE "STORE_T" AS OBJECT(
-Store_ID VARCHAR2(5),
-Store_Location VARCHAR2(20),
-Store_Contact REF Contact_T,
-Store_Manage VARCHAR2(30),
-Store_Depts DEPARTMENTLIST,
-Store_Items AVAILABLELIST) NOT FINAL;
-
-/
---------------------------------------------------------
---  DDL for Type STORELIST
---------------------------------------------------------
-  CREATE OR REPLACE TYPE "STORELIST" as table of Store_t
+  CREATE OR REPLACE TYPE "DEPARTMENTLIST" as table of Department_t;
 
 /
 --------------------------------------------------------
@@ -171,26 +136,13 @@ Store_Items AVAILABLELIST) NOT FINAL;
 Trans_ID INTEGER,
 Trans_Date DATE,
 Store_Contact REF Contact_T,
-Quantity) NOT FINAL;
+Quantity INTEGER) NOT FINAL;
 
 /
 --------------------------------------------------------
 --  DDL for Type TRANSACTIONLIST
 --------------------------------------------------------
-  CREATE OR REPLACE TYPE "TRANSACTIONLIST" as table of REF Transaction_t
-
-/
---------------------------------------------------------
---  DDL for Type CUSTOMER_T
---------------------------------------------------------
-  CREATE OR REPLACE TYPE "CUSTOMER_T" AS OBJECT(
-Cust_ID VARCHAR2(5),
-Cust_Name VARCHAR2(20),
-Cust_Contact REF Contact_t,
-Cust_Gender INTEGER(1),
-Cust_DOB DATE,
-Cust_Bonus_Points INTEGER,
-Cust_Trans TRANSACTIONLIST) NOT FINAL; 
+  CREATE OR REPLACE TYPE "TRANSACTIONLIST" as table of REF Transaction_t;
   
 /
 --------------------------------------------------------
@@ -208,7 +160,52 @@ Item_Trans TRANSACTIONLIST) NOT FINAL;
 --------------------------------------------------------
 --  DDL for Type ITEMLIST
 --------------------------------------------------------
-  CREATE OR REPLACE TYPE "ITEMLIST" as table of REF Item_t
+  CREATE OR REPLACE TYPE "ITEMLIST" as table of REF Item_t;
+  
+/
+--------------------------------------------------------
+--  DDL for Type AVAILABLE_IN_T
+--------------------------------------------------------
+  CREATE OR REPLACE TYPE "AVAILABLE_IN_T" AS OBJECT(
+Item_ID REF Item_t,
+Item_Stock INTEGER) NOT FINAL;
+
+/
+--------------------------------------------------------
+--  DDL for Type AVAILABLELIST
+--------------------------------------------------------
+  CREATE OR REPLACE TYPE "AVAILABLELIST" as table of Available_In_t;
+  
+/
+--------------------------------------------------------
+--  DDL for Type STORE_T
+--------------------------------------------------------
+  CREATE OR REPLACE TYPE "STORE_T" AS OBJECT(
+Store_ID VARCHAR2(5),
+Store_Location VARCHAR2(20),
+Store_Contact REF Contact_T,
+Store_Manage VARCHAR2(30),
+Store_Depts DEPARTMENTLIST,
+Store_Items AVAILABLELIST) NOT FINAL;
+
+/
+--------------------------------------------------------
+--  DDL for Type STORELIST
+--------------------------------------------------------
+  CREATE OR REPLACE TYPE "STORELIST" as table of Store_t;
+
+/
+--------------------------------------------------------
+--  DDL for Type CUSTOMER_T
+--------------------------------------------------------
+  CREATE OR REPLACE TYPE "CUSTOMER_T" AS OBJECT(
+Cust_ID VARCHAR2(5),
+Cust_Name VARCHAR2(20),
+Cust_Contact REF Contact_t,
+Cust_Gender INTEGER(1),
+Cust_DOB DATE,
+Cust_Bonus_Points INTEGER,
+Cust_Trans TRANSACTIONLIST) NOT FINAL; 
   
 /
 --------------------------------------------------------
@@ -217,7 +214,7 @@ Item_Trans TRANSACTIONLIST) NOT FINAL;
   CREATE OR REPLACE TYPE "MAKER_T" AS OBJECT(
 Maker_ID VARCHAR2(5),
 Maker_Name VARCHAR2(20),
-Maker_Contact REF Contact_T
+Maker_Contact REF Contact_T,
 Items ITEMLIST) NOT FINAL;  
   
 /
