@@ -50,6 +50,16 @@
 	PRIMARY KEY ("P_NR"),
 	FOREIGN KEY ("P_GESCHLECHT") REFERENCES "GESCHLECHTER" ("G_CODE"), 
 	FOREIGN KEY ("P_BERUFSCODE") REFERENCES "BERUFE" ("B_CODE"));
+
+--------------------------------------------------------
+--  DDL for Table ZUORDNUNG
+--------------------------------------------------------
+  CREATE TABLE "ZUORDNUNG"(
+	"Z_NR" NUMBER(*,0), 
+	"Z_TABLE_OLD" VARCHAR2(30 BYTE), 
+	"Z_KEY_OLD" VARCHAR2(60 BYTE), 
+	PRIMARY KEY ("Z_NR"),
+	FOREIGN KEY ("Z_NR") REFERENCES "PERSONAL" ("P_NR"));
  
 
 --------------------------------------------------------
