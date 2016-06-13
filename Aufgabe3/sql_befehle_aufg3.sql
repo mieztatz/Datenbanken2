@@ -2,69 +2,61 @@
 --  DDL for Table ANGESTELLTE
 --------------------------------------------------------
   CREATE TABLE "ANGESTELLTE"(
-	"A_NR" NUMBER(*,0),
-	"A_NAME" VARCHAR2(50 BYTE), 
+	"A_NR" NUMBER,
+	"A_NAME" VARCHAR2(50), 
 	"A_GEBURTSDATUM" DATE, 
-	"A_BERUFSBEZEICHNUNG" VARCHAR2(60 BYTE), 
-	"A_MONATSGEHALT" NUMBER(*,0), 
-	"A_GESCHLECHT" VARCHAR2(10 BYTE), 
+	"A_BERUFSBEZEICHNUNG" VARCHAR2(60), 
+	"A_MONATSGEHALT" NUMBER, 
+	"A_GESCHLECHT" VARCHAR2(10), 
 	PRIMARY KEY ("A_NR"));
 	
 --------------------------------------------------------
 --  DDL for Table ARBEITER
 --------------------------------------------------------
   CREATE TABLE "ARBEITER"(	
-	"A_NAME" VARCHAR2(30 BYTE), 
-	"A_VORNAME" VARCHAR2(30 BYTE), 
-	"A_GEBURTSMONAT" VARCHAR2(5 BYTE), 
-	"A_STUNDENLOHN" NUMBER(*,0), 
+	"A_NAME" VARCHAR2(30), 
+	"A_VORNAME" VARCHAR2(30), 
+	"A_GEBURTSMONAT" VARCHAR2(5), 
+	"A_STUNDENLOHN" NUMBER, 
 	PRIMARY KEY ("A_NAME", "A_VORNAME"));
   
 --------------------------------------------------------
 --  DDL for Table BERUFE
 --------------------------------------------------------
   CREATE TABLE "BERUFE"(
-	"B_CODE" NUMBER(*,0), 
-	"B_TYPE" VARCHAR2(30 BYTE), 
+	"B_CODE" NUMBER, 
+	"B_TYPE" VARCHAR2(30), 
 	PRIMARY KEY ("B_CODE"));
    
 --------------------------------------------------------
 --  DDL for Table GESCHLECHTER
 --------------------------------------------------------
   CREATE TABLE "GESCHLECHTER"(
-	"G_CODE" NUMBER(*,0), 
-	"G_TYPE" VARCHAR2(10 BYTE), 
-	PRIMARY KEY ("G_CODE"));
+	"G_NAME" VARCHAR2(15),
+	"G_CODE" NUMBER, 
+	PRIMARY KEY ("G_NAME"));
 
 --------------------------------------------------------
 --  DDL for Table PERSONAL
 --------------------------------------------------------
   CREATE TABLE "PERSONAL"(
-	"P_NR" NUMBER(*,0), 
-	"P_NAME" VARCHAR2(30 BYTE), 
-	"P_VORNAME" VARCHAR2(30 BYTE), 
-	"P_ALTER" NUMBER(*,0), 
-	"P_GESCHLECHT" NUMBER(*,0), 
-	"P_BERUFSCODE" NUMBER(*,0), 
-	"P_JAHRESEINKOMMEN" NUMBER(*,0), 
-	PRIMARY KEY ("P_NR"),
-	FOREIGN KEY ("P_GESCHLECHT") REFERENCES "GESCHLECHTER" ("G_CODE"), 
+	"P_NR" NUMBER, 
+	"P_NAME" VARCHAR2(30), 
+	"P_VORNAME" VARCHAR2(30), 
+	"P_ALTER" NUMBER, 
+	"P_GESCHLECHT" NUMBER, 
+	"P_BERUFSCODE" NUMBER, 
+	"P_JAHRESEINKOMMEN" NUMBER, 
+	PRIMARY KEY ("P_NR"), 
 	FOREIGN KEY ("P_BERUFSCODE") REFERENCES "BERUFE" ("B_CODE"));
 
 --------------------------------------------------------
 --  DDL for Table ZUORDNUNG
 --------------------------------------------------------
   CREATE TABLE "ZUORDNUNG"(
-	"Z_NR" NUMBER(*,0), 
-	"Z_TABLE_OLD" VARCHAR2(30 BYTE), 
-	"Z_KEY_OLD" VARCHAR2(60 BYTE), 
+	"Z_NR" NUMBER, 
+	"Z_TABLE_OLD" VARCHAR2(30), 
+	"Z_KEY_OLD" VARCHAR2(60), 
 	PRIMARY KEY ("Z_NR"),
 	FOREIGN KEY ("Z_NR") REFERENCES "PERSONAL" ("P_NR"));
  
-
---------------------------------------------------------
---  INSERTS for Table GESCHLECHTER
---------------------------------------------------------
-Insert into GESCHLECHTER (G_CODE,G_TYPE) values ('0','unbekannt');
-Insert into GESCHLECHTER (G_CODE,G_TYPE) values ('1','weiblich');
-Insert into GESCHLECHTER (G_CODE,G_TYPE) values ('2','männlich');
