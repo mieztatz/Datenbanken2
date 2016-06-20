@@ -59,50 +59,66 @@
 	"Z_KEY_OLD" VARCHAR2(60), 
 	PRIMARY KEY ("Z_NR"),
 	FOREIGN KEY ("Z_NR") REFERENCES "PERSONAL" ("P_NR"));
-	
 
+--------------------------------------------------------
+--  DDL for SEQUENCE PNR_SEQUENCE
+--------------------------------------------------------
+
+CREATE SEQUENCE  "PNR_SEQUENCE";
 	
 --------------------------------------------------------
 --  DDL for Function GETLASTNAME
 --------------------------------------------------------
-CREATE OR REPLACE FUNCTION "GETLASTNAME" 
+CREATE or REPLACE FUNCTION "GETLASTNAME" 
   (lname VARCHAR2)
 RETURN VARCHAR2
 IS
 BEGIN
-  RETURN SUBSTR(lname,instr(lname,' ',0)+1);
+  RETURN SUBSTR(lname,INSTR(lname,' ')+1);
 END;
 
 /
 --------------------------------------------------------
 --  DDL for Function GETFIRSTNAME
 --------------------------------------------------------
-CREATE OR REPLACE FUNCTION "GETFIRSTNAME" 
+create or replace FUNCTION "GETFIRSTNAME" 
   (fname VARCHAR2)
 RETURN VARCHAR2
 IS
 BEGIN
-  RETURN SUBSTR(fname,0, instr(fname,' ',0));
+  RETURN SUBSTR(fname,0,INSTR(fname,' ')-1);
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Function GETAGE
+--------------------------------------------------------
+CREATE or REPLACE FUNCTION "GETAGE" 
+  (birthdate Date)
+RETURN VARCHAR2
+IS
+BEGIN
+  RETURN Trunc((months_between(sysdate, '03.11.1988') /12),0);
 END;
 
 /
 --------------------------------------------------------
 --  DDL for Procedure 
 --------------------------------------------------------
-  CREATE OR REPLACE PROCEDURE "transform" 
+create or replace PROCEDURE "TRANSFORMATION" 
 IS
-p_name VARCHAR2;
-p_vorname VARCHAR2;
+p_name VARCHAR2(30);
+p_vorname VARCHAR2(30);
 CURSOR CANGST IS
-	SELECT A_Name, A_Geburtsdatum, A_Berufsbezeichnung, A_Monatsgehalt, A_Geschlecht
-	FROM Angestellte
+	SELECT A_Name
+	FROM Angestellte;
 BEGIN
   OPEN CANGST;
   LOOP 
-	FETCH CANGST INTO p_name
+	FETCH CANGST INTO p_name;
 	EXIT WHEN CANGST%NOTFOUND;
-	INSERT INTO PERSONAL(p_name,p_vorname) VALUES (GETLASTNAME(p_name),GETFIRSTNAME(name);
+	INSERT INTO PERSONAL(p_nr,p_name,p_vorname) VALUES (pnr_sequence.nextval,GETLASTNAME(p_name),GETFIRSTNAME(p_name));
   END LOOP; 
-  CLOSE ANGST;
+  CLOSE CANGST;
 END;
  
