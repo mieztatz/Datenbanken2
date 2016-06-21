@@ -78,8 +78,8 @@
 
   CREATE TABLE "DBST47"."ZUORDNUNG" 
    (	"Z_NR" NUMBER, 
-	"Z_TABLE_OLD" VARCHAR2(30 BYTE), 
-	"Z_KEY_OLD" VARCHAR2(60 BYTE),
+	"Z_TABLE_OLD" VARCHAR2(30), 
+	"Z_KEY_OLD" VARCHAR2(60),
 	PRIMARY KEY ("Z_NR"),
 	FOREIGN KEY ("Z_NR") REFERENCES "PERSONAL" ("P_NR")
    );
@@ -107,11 +107,26 @@ Insert into DBST47.GESCHLECHTER (G_NAME,G_CODE) values ('Fabian','2');
 --------------------------------------------------------
 --  DDL for Function GETAGE
 --------------------------------------------------------
-  CREATE OR REPLACE FUNCTION "DBST47"."GETAGE" 
+  CREATE OR REPLACE FUNCTION "GETAGE" 
   (birthdate Date)
 RETURN VARCHAR2
 IS
 BEGIN
+  RETURN Trunc((months_between(sysdate, birthdate) /12),0);
+END;
+
+/
+
+--------------------------------------------------------
+--  DDL for Function GETAGE
+--------------------------------------------------------
+  CREATE OR REPLACE FUNCTION "GETAGE" 
+  (birthdate VARCHAR)
+RETURN VARCHAR2
+IS
+BEGIN
+  -- TODO: SELECT EXTRACT(MONTH FROM SYSDATE) FROM DUAL;
+  -- TODO: SELECT TO_DATE('2012-06-05', 'YYYY-MM-DD') FROM dual;
   RETURN Trunc((months_between(sysdate, birthdate) /12),0);
 END;
 
@@ -151,14 +166,18 @@ END;
 --  DDL for Function GETGENDERCODE
 --------------------------------------------------------
   CREATE OR REPLACE FUNCTION "GETGENDERCODE" 
-  (gender VARCHAR2)
+  (gender VARCHAR2, firstname VARCHAR2)
 RETURN NUMBER
 IS
 gendercode NUMBER;
+gendercodetmp NUMBER;
 BEGIN
   IF gender = 'm\E4nnlich' THEN gendercode := 1; 
   ELSIF gender = 'weiblich' THEN gendercode := 2;
   ELSE gendercode := 0;
+  END IF;
+  SELECT G_CODE INTO gendercodetmp FROM GESCHLECHTER WHERE G_NAME = firstname;
+  IF gendercodetmp = NULL THEN INSERT INTO GESCHLECHTER (G_NAME, G_CODE) VALUES (firstname,gendercode);
   END IF;
   RETURN gendercode;
 END;
@@ -205,7 +224,10 @@ IS
 jobcode NUMBER;
 BEGIN
   SELECT B_CODE INTO jobcode FROM BERUFE WHERE B_TYPE = jobname;
-  IF jobname = NULL THEN SELECT max(B_CODE) INTO jobcode FROM BERUFE; jobcode := jobcode + 1; INSERT INTO BERUFE (B_CODE, B_TYPE) VALUES (jobcode,jobname); 
+  IF jobcode = NULL THEN 
+	SELECT max(B_CODE) INTO jobcode FROM BERUFE; 
+	jobcode := jobcode + 1; 
+	INSERT INTO BERUFE (B_CODE, B_TYPE) VALUES (jobcode,jobname); 
   END IF;
   RETURN jobcode;
 END;
@@ -226,10 +248,12 @@ END;
 /
 
 --------------------------------------------------------
---  DDL for Procedure TRANSFORMATION
+--  DDL for Procedure TRANSFORMATION_ANGESTELLTE
 --------------------------------------------------------
   CREATE OR REPLACE PROCEDURE "TRANSFORMATION_ANGESTELLTE" 
 IS
+a_nr NUMBER;
+p_nr NUMBER;
 p_name VARCHAR2(30);
 p_vorname VARCHAR2(30);
 p_age DATE;
@@ -237,15 +261,48 @@ p_geschlecht VARCHAR2(10);
 p_job VARCHAR(50);
 p_money NUMBER;
 CURSOR CANGST IS
-	SELECT A_Name, A_Geburtsdatum, A_Geschlecht,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT
+	SELECT A_Nr, A_Name, A_Geburtsdatum, A_Geschlecht,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT
 	FROM Angestellte;
 BEGIN
   OPEN CANGST;
   LOOP 
-	FETCH CANGST INTO p_name, p_age, p_geschlecht, p_job, p_money;
+	FETCH CANGST INTO a_nr, p_name, p_age, p_geschlecht, p_job, p_money;
 	EXIT WHEN CANGST%NOTFOUND;
-  SELECT GETFIRSTNAME(p_name) INTO p_vorname FROM DUAL;
-  INSERT INTO PERSONAL(p_nr,p_name,p_vorname,p_alter,p_geschlecht) VALUES (pnr_sequence.nextval,GETLASTNAME(p_name),p_vorname,GETAGE(p_age),GETGENDERCODE(p_geschlecht),GETJOBCODE(p_job),GETMONEY(p_money));
+	p_nr := pnr_sequence.nextval
+  	SELECT GETFIRSTNAME(p_name) INTO p_vorname FROM DUAL;
+  	INSERT INTO PERSONAL(p_nr,p_name,p_vorname,p_alter,p_geschlecht) VALUES (p_nr,GETLASTNAME(p_name),p_vorname,GETAGE(p_age),GETGENDERCODE(p_geschlecht,p_vorname),GETJOBCODE(p_job),GETMONEY(p_money));
+	INSERT INTO ZUORDNUNG (Z_NR, Z_TABLE_OLD, Z_KEY_OLD) VALUES (p_nr, 'Angestellte', a_nr);
+  END LOOP; 
+  CLOSE CANGST;
+END;
+
+/
+
+--------------------------------------------------------
+--  DDL for Procedure TRANSFORMATION_ARBEITER
+--------------------------------------------------------
+  CREATE OR REPLACE PROCEDURE "TRANSFORMATION_ARBEITER" 
+IS
+p_nr NUMBER;
+p_name VARCHAR2(30);
+p_vorname VARCHAR2(30);
+p_age DATE;
+p_geschlecht VARCHAR2(10);
+p_job VARCHAR(50);
+p_money NUMBER;
+CURSOR CANGST IS
+	SELECT A_Name, A_Vorname, A_Geburtsmonat, A_Stundenlohn
+	FROM Arbeiter;
+BEGIN
+  OPEN CARB;
+  LOOP 
+	FETCH CARB INTO p_name, p_vorname, p_age, p_money;
+	EXIT WHEN CANGST%NOTFOUND;
+	p_nr := pnr_sequence.nextval
+  	
+  	INSERT INTO PERSONAL(p_nr,p_name,p_vorname,p_alter,p_geschlecht) VALUES (p_nr,p_name,p_vorname,GETAGE(p_age),GETGENDERCODE(p_geschlecht,p_vorname),GETJOBCODE(p_job),GETMONEY(p_money));
+	-- TODO: CONCAT(CONCAT(p_name,','),p_vorname) --> arb_nr erstellen
+	INSERT INTO ZUORDNUNG (Z_NR, Z_TABLE_OLD, Z_KEY_OLD) VALUES (p_nr, 'Arbeiter', arb_nr);
   END LOOP; 
   CLOSE CANGST;
 END;
