@@ -1,7 +1,42 @@
 --------------------------------------------------------
+--  DDL for Table NUMBERS
+--------------------------------------------------------
+  CREATE TABLE "NUMBERS" 
+   (	"ZAHLEN" NUMBER
+   );
+
+/
+
+--------------------------------------------------------
+--  DDL for Table NUMBERS_RESULT
+--------------------------------------------------------
+  CREATE TABLE "NUMBERS_RESULT" 
+   (	"ZAHLEN" NUMBER
+   );
+
+/
+
+Insert into DBST47.NUMBERS (ZAHLEN) values ('10');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('20');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('25');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('250');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('350');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('100');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('5');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('50');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('53');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('42');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('120');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('142');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('242');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('342');
+Insert into DBST47.NUMBERS (ZAHLEN) values ('420');
+
+/
+
+--------------------------------------------------------
 --  DDL for Function MIN_MAX_SCALE
 --------------------------------------------------------
-
   CREATE OR REPLACE FUNCTION "MIN_MAX_SCALE" 
   (min_old NUMBER, min_new NUMBER, max_old NUMBER, max_new NUMBER, v NUMBER)
 RETURN NUMBER
@@ -11,10 +46,11 @@ BEGIN
 END;
 
 /
+
 --------------------------------------------------------
 --  DDL for Procedure MIN_MAX_CALCULATOR
 --------------------------------------------------------
--- Ergebnisse werden in neue Table eingetragen
+-- Ergebnisse werden in neue Table "NUMBERS_RESULT" eingetragen
   CREATE OR REPLACE PROCEDURE "MIN_MAX_CALCULATOR" 
   (min_new NUMBER,max_new NUMBER)
 IS
@@ -40,6 +76,24 @@ END;
 
 --> Result: 
 EXECUTE min_max_calculator(0,10);
+
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('0,120481927710843373493975903614457831325');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('0,361445783132530120481927710843373493976');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('0,481927710843373493975903614457831325301');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('5,90361445783132530120481927710843373494');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('8,31325301204819277108433734939759036145');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('2,28915662650602409638554216867469879518');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('0');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('1,08433734939759036144578313253012048193');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('1,15662650602409638554216867469879518072');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('0,891566265060240963855421686746987951807');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('2,77108433734939759036144578313253012048');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('3,30120481927710843373493975903614457831');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('5,71084337349397590361445783132530120482');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('8,12048192771084337349397590361445783133');
+Insert into DBST47.NUMBERS_RESULT (ZAHLEN) values ('10');
+
+/
 
 SELECT * FROM NUMBERS ORDER BY ZAHLEN ASC;
  ZAHLEN
