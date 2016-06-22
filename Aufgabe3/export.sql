@@ -76,7 +76,7 @@
 --  DDL for Table ZUORDNUNG
 --------------------------------------------------------
 
-  CREATE TABLE "DBST47"."ZUORDNUNG" 
+  CREATE TABLE "ZUORDNUNG" 
    (	"Z_NR" NUMBER, 
 	"Z_TABLE_OLD" VARCHAR2(30), 
 	"Z_KEY_OLD" VARCHAR2(60),
@@ -169,20 +169,24 @@ END;
   (gender VARCHAR2, firstname VARCHAR2)
 RETURN NUMBER
 IS
+CURSOR CGCODE IS
+	SELECT G_CODE
+	FROM Geschlechter
+  WHERE G_NAME = firstname;
 gendercode NUMBER;
-gendercodetmp NUMBER;
+tmp NUMBER;
 BEGIN
-  IF gender = 'm\E4nnlich' THEN gendercode := 1; 
-  ELSIF gender = 'weiblich' THEN gendercode := 2;
+  IF gender = 'männlich' THEN gendercode := 2; 
+  ELSIF gender = 'weiblich' THEN gendercode := 1;
   ELSE gendercode := 0;
   END IF;
-  SELECT G_CODE INTO gendercodetmp FROM GESCHLECHTER WHERE G_NAME = firstname;
-  IF gendercodetmp = NULL THEN INSERT INTO GESCHLECHTER (G_NAME, G_CODE) VALUES (firstname,gendercode);
+  OPEN CGCODE;
+  FETCH CGCODE into tmp;
+  IF CGCODE%NOTFOUND then 
+    INSERT INTO GESCHLECHTER (G_NAME, G_CODE) VALUES (firstname,gendercode);
   END IF;
   RETURN gendercode;
 END;
-
-/
 
 --------------------------------------------------------
 --  DDL for Function GETGENDERCODEFROMNAME
@@ -261,23 +265,22 @@ p_geschlecht VARCHAR2(10);
 p_job VARCHAR(50);
 p_money NUMBER;
 CURSOR CANGST IS
-	SELECT A_Nr, A_Name, A_Geburtsdatum, A_Geschlecht,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT
+	SELECT A_Nr, A_Name, A_Geburtsdatum, A_Berufsbezeichnung, A_Monatsgehalt, A_Geschlecht
 	FROM Angestellte;
 BEGIN
   OPEN CANGST;
   LOOP 
-	FETCH CANGST INTO a_nr, p_name, p_age, p_geschlecht, p_job, p_money;
-	EXIT WHEN CANGST%NOTFOUND;
-	p_nr := pnr_sequence.nextval
-  	SELECT GETFIRSTNAME(p_name) INTO p_vorname FROM DUAL;
-  	INSERT INTO PERSONAL(p_nr,p_name,p_vorname,p_alter,p_geschlecht) VALUES (p_nr,GETLASTNAME(p_name),p_vorname,GETAGE(p_age),GETGENDERCODE(p_geschlecht,p_vorname),GETJOBCODE(p_job),GETMONEY(p_money));
-	INSERT INTO ZUORDNUNG (Z_NR, Z_TABLE_OLD, Z_KEY_OLD) VALUES (p_nr, 'Angestellte', a_nr);
+    FETCH CANGST INTO a_nr, p_name, p_age, p_job, p_money, p_geschlecht;
+    EXIT WHEN CANGST%NOTFOUND;
+    SELECT pnr_sequence.nextval INTO p_nr FROM DUAL;
+    SELECT GETFIRSTNAME(p_name) INTO p_vorname FROM DUAL;
+  	INSERT INTO PERSONAL(p_nr,p_name,p_vorname,p_alter,p_geschlecht,p_berufscode,p_jahreseinkommen) VALUES (p_nr,GETLASTNAME(p_name),p_vorname,GETAGE(p_age),GETGENDERCODE(p_geschlecht,p_vorname),GETJOBCODE(p_job),GETMONEY(p_money));
+    INSERT INTO ZUORDNUNG (Z_NR, Z_TABLE_OLD, Z_KEY_OLD) VALUES (p_nr, 'Angestellte', TO_CHAR(a_nr, '9999'));
   END LOOP; 
   CLOSE CANGST;
 END;
 
 /
-
 --------------------------------------------------------
 --  DDL for Procedure TRANSFORMATION_ARBEITER
 --------------------------------------------------------

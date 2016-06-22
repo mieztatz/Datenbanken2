@@ -102,23 +102,4 @@ BEGIN
 END;
 
 /
---------------------------------------------------------
---  DDL for Procedure 
---------------------------------------------------------
-create or replace PROCEDURE "TRANSFORMATION" 
-IS
-p_name VARCHAR2(30);
-p_vorname VARCHAR2(30);
-CURSOR CANGST IS
-	SELECT A_Name
-	FROM Angestellte;
-BEGIN
-  OPEN CANGST;
-  LOOP 
-	FETCH CANGST INTO p_name;
-	EXIT WHEN CANGST%NOTFOUND;
-	INSERT INTO PERSONAL(p_nr,p_name,p_vorname) VALUES (pnr_sequence.nextval,GETLASTNAME(p_name),GETFIRSTNAME(p_name));
-  END LOOP; 
-  CLOSE CANGST;
-END;
- 
+
