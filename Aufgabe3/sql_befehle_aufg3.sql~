@@ -87,24 +87,6 @@
 /
 
 --------------------------------------------------------
---  Inserts in Table ANGESTELLTE
---------------------------------------------------------
-Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT,A_GESCHLECHT) values ('1','Fabian Uhlmann',to_date('03.11.88','DD.MM.RR'),'Informatiker','2000','männlich');
-Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT,A_GESCHLECHT) values ('2','Diana Irmscher',to_date('01.01.90','DD.MM.RR'),'Informatiker','2001','weiblich');
-Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT,A_GESCHLECHT) values ('3','Alexandra Vogel',to_date('01.10.92','DD.MM.RR'),'Informatiker','9999','weiblich');
-Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT,A_GESCHLECHT) values ('4','Alexander Boxhorn',to_date('27.07.82','DD.MM.RR'),'Logistiker','1375','männlich');
-
-/
-
---------------------------------------------------------
---  Inserts in Table GESCHLECHTER
---------------------------------------------------------
-Insert into GESCHLECHTER (G_NAME,G_CODE) values ('Alexandra','1');
-Insert into GESCHLECHTER (G_NAME,G_CODE) values ('Fabian','2');
-
-/
-
---------------------------------------------------------
 --  DDL for Function GETAGE_DATE
 --------------------------------------------------------
   CREATE OR REPLACE FUNCTION "GETAGE_DATE" 
@@ -125,7 +107,7 @@ END;
 RETURN VARCHAR2
 age DATE;
 BEGIN
-  -- TODO: SELECT EXTRACT(MONTH FROM SYSDATE) FROM DUAL;
+  -- SELECT EXTRACT(MONTH FROM SYSDATE) FROM DUAL;
   SELECT TO_DATE(birthdate, 'MM.RR') INTO age FROM DUAL;
   RETURN Trunc((months_between(sysdate, age) /12),0);
 END;
@@ -448,4 +430,50 @@ END;
 
 */
 
+--------------------------------------------------------
+--  Inserts in Table ANGESTELLTE
+--------------------------------------------------------
+Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT,A_GESCHLECHT) values ('1','Fabian Uhlmann',to_date('03.11.88','DD.MM.RR'),'Informatiker','2000','männlich');
+Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT,A_GESCHLECHT) values ('2','Diana Irmscher',to_date('01.01.90','DD.MM.RR'),'Informatiker','2001','weiblich');
+Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT,A_GESCHLECHT) values ('3','Alexandra Vogel',to_date('01.10.92','DD.MM.RR'),'Informatiker','9999','weiblich');
+Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT,A_GESCHLECHT) values ('4','Alexander Boxhorn',to_date('27.07.82','DD.MM.RR'),'Logistiker','1375','männlich');
+
+/
+
+--------------------------------------------------------
+--  Inserts in Table ANGESTELLTE
+--------------------------------------------------------
+Insert into ARBEITER (A_NAME,A_VORNAME,A_GEBURTSMONAT,A_STUNDENLOHN) values ('Meister','Bob','11.88',20);
+Insert into ARBEITER (A_NAME,A_VORNAME,A_GEBURTSMONAT,A_STUNDENLOHN) values ('Müller','Sarah','07.95',10);
+Insert into ARBEITER (A_NAME,A_VORNAME,A_GEBURTSMONAT,A_STUNDENLOHN) values ('Bach','Hans','01.75',5);
+Insert into ARBEITER (A_NAME,A_VORNAME,A_GEBURTSMONAT,A_STUNDENLOHN) values ('Heinz','Karl','11.88',8.5);
+
+/
+
+--------------------------------------------------------
+--  Inserts in Table GESCHLECHTER
+--------------------------------------------------------
+Insert into GESCHLECHTER (G_NAME,G_CODE) values ('Alexandra','1');
+Insert into GESCHLECHTER (G_NAME,G_CODE) values ('Fabian','2');
+
+/
+
+--------------------------------------------------------
+--  Testcases
+--------------------------------------------------------
+/*1*/ EXECUTE TRANSFORMATION_ARBEITER;
+/*2*/ EXECUTE TRANSFORMATION_ANGESTELLTE;
+
+/*3*/ Insert into ARBEITER (A_NAME,A_VORNAME,A_GEBURTSMONAT,A_STUNDENLOHN) values ('Kapitän','Blaubär','05.44',33); 
+/*4*/ UPDATE ARBEITER SET A_NAME = 'Meyer' WHERE A_NAME = 'Meister'; /* !!! Table Zuordnung darf/sollte nur im einen Datensatz das Attribut Z_KEY_OLD updaten */
+/*5*/ UPDATE ARBEITER SET A_VORNAME = 'Hans-Joachim' WHERE A_NAME = 'Bach'; /* !!! Table Zuordnung darf/sollte nur im einen Datensatz das Attribut Z_KEY_OLD updaten */
+/*6*/ UPDATE ARBEITER SET A_GEBURTSMONAT = '01.01' WHERE A_NAME = 'Heinz';
+/*7*/ UPDATE ARBEITER SET A_STUNDENLOHN = 3.5 WHERE A_NAME = 'Müller';
+/*8*/ DELETE FROM ARBEITER WHERE A_NAME = 'Kapitän'; /* In Table Zuordnung darf/soll nur 1 Datensatz entfernt werden */
+
+/*9*/ Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT,A_GESCHLECHT) values ('5','Max Mustermann',to_date('10.03.67','DD.MM.RR'),'BWL','850','männlich');
+/*10*/ UPDATE ANGESTELLTE SET A_NR = '10' WHERE A_NAME = 'Diana Irmscher'; /* !!! Table Zuordnung darf/sollte nur im einen Datensatz das Attribut Z_KEY_OLD updaten */
+/*11*/ UPDATE ANGESTELLTE SET A_NAME = 'Fabius Uhlmex' WHERE A_NAME = 'Fabian Uhlmann';
+/*12*/ UPDATE ANGESTELLTE SET A_GEBURTSDATUM = 03.10.1955 WHERE A_NAME = 'Alexandra Vogel';
+/*13*/ UPDATE ANGESTELLTE SET A_BERUFSBEZEICHNUNG = 'Facility Management' WHERE A_NAME = 'Alexander Boxhorn';
 
