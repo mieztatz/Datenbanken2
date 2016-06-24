@@ -433,6 +433,7 @@ END;
 --------------------------------------------------------
 --  Inserts in Table ANGESTELLTE
 --------------------------------------------------------
+DELETE FROM ANGESTELLTE;
 Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT,A_GESCHLECHT) values ('1','Fabian Uhlmann',to_date('03.11.88','DD.MM.RR'),'Informatiker','2000','männlich');
 Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT,A_GESCHLECHT) values ('2','Diana Irmscher',to_date('01.01.90','DD.MM.RR'),'Informatiker','2001','weiblich');
 Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT,A_GESCHLECHT) values ('3','Alexandra Vogel',to_date('01.10.92','DD.MM.RR'),'Informatiker','9999','weiblich');
@@ -441,8 +442,9 @@ Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATS
 /
 
 --------------------------------------------------------
---  Inserts in Table ANGESTELLTE
+--  Inserts in Table ARBEITER
 --------------------------------------------------------
+DELETE FROM ARBEITER;
 Insert into ARBEITER (A_NAME,A_VORNAME,A_GEBURTSMONAT,A_STUNDENLOHN) values ('Meister','Bob','11.88',20);
 Insert into ARBEITER (A_NAME,A_VORNAME,A_GEBURTSMONAT,A_STUNDENLOHN) values ('Müller','Sarah','07.95',10);
 Insert into ARBEITER (A_NAME,A_VORNAME,A_GEBURTSMONAT,A_STUNDENLOHN) values ('Bach','Hans','01.75',5);
@@ -453,6 +455,7 @@ Insert into ARBEITER (A_NAME,A_VORNAME,A_GEBURTSMONAT,A_STUNDENLOHN) values ('He
 --------------------------------------------------------
 --  Inserts in Table GESCHLECHTER
 --------------------------------------------------------
+DELETE FROM GESCHLECHTER;
 Insert into GESCHLECHTER (G_NAME,G_CODE) values ('Alexandra','1');
 Insert into GESCHLECHTER (G_NAME,G_CODE) values ('Fabian','2');
 
@@ -461,6 +464,8 @@ Insert into GESCHLECHTER (G_NAME,G_CODE) values ('Fabian','2');
 --------------------------------------------------------
 --  Testcases
 --------------------------------------------------------
+DELETE FROM ZUORDNUNG;
+DELETE FROM PERSONAL;
 /*1*/ EXECUTE TRANSFORMATION_ARBEITER;
 /*2*/ EXECUTE TRANSFORMATION_ANGESTELLTE;
 
