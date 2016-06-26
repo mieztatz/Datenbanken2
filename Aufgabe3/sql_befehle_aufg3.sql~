@@ -464,8 +464,6 @@ Insert into GESCHLECHTER (G_NAME,G_CODE) values ('Fabian','2');
 --------------------------------------------------------
 --  Testcases
 --------------------------------------------------------
-DELETE FROM ZUORDNUNG;
-DELETE FROM PERSONAL;
 /*1*/ EXECUTE TRANSFORMATION_ARBEITER;
 /*2*/ EXECUTE TRANSFORMATION_ANGESTELLTE;
 
