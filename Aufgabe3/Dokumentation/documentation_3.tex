@@ -111,6 +111,39 @@ SELECT * FROM NUMBERS ORDER BY ZAHLEN ASC;
 \newpage
 
 \section*{Aufgabe 3}
+Aus zwei verschiedenen Quellen werden zwei Tabellen Angestellte und Arbeiter
+in den Arbeitsbereich eines Data Warehouse Systems geladen, die in eine
+Tabelle Personal integriert werden sollen.\\
+Die Tabellen besitzen die folgenden
+Attribute:\\ \\
+\begin{tabular}{l l}
+Angestellte: & Name (String, Vorname und Nachname durch Blank
+ getrennt; oder Nachname, Vorname) \\
+ & Geburtsdatum (Format: Datum, YY/MM/DD) \\
+ & Berufsbezeichnung \\
+ & Monatsgehalt \\
+ & Geschlecht: männlich bzw. weiblich \\
+ & Angestelltennr (Primärschlüssel) \\
+\end{tabular}
+
+\begin{tabular}{l l}
+Arbeiter: & Name \\
+& Vorname \\
+& Geburtsmonat (Format: String MM.YY) \\
+& Stundenlohn \\
+\end{tabular}
+
+\begin{tabular}{l l}
+Personal: & Personalnr. (Primärschlüssel) \\
+ & Name \\
+ & Vorname \\
+ & Alter \\
+ & Geschlecht: (0 (unbekannt), 1 (weiblich), 2 (männlich)) \\
+ & Berufscode \\
+ & Jahreseinkommen \\
+\end{tabular}
+\\
+Die Tabelle Personal enthält einen neuen (generierten) Schlüssel. 
 \begin{lstlisting}
 --------------------------------------------------------
 --  DDL for Sequence PNR_SEQUENCE
@@ -151,7 +184,8 @@ SELECT * FROM NUMBERS ORDER BY ZAHLEN ASC;
 
 /
 \end{lstlisting}
-
+Für die Berufscodes ist eine Code-Tabelle zu definieren, die Berufsbezeichnungen
+(einschließlich der Bezeichnung Arbeiter) einen Code zuordnet.
 \begin{lstlisting}
 --------------------------------------------------------
 --  DDL for Table BERUFE
@@ -164,7 +198,10 @@ SELECT * FROM NUMBERS ORDER BY ZAHLEN ASC;
 
 /
 \end{lstlisting}
-
+Für die „Geschlechtsbestimmung“ der Arbeiter verwenden Sie bitte eine Hilfstabelle, die
+Vornamen jeweils ein oder mehre Geschlechter zuordnen. Ergibt der Abgleich mit
+dieser Tabelle kein eindeutiges Ergebnis wird der Eintrag in der Zieltabelle auf 0
+(unbekannt) gesetzt. 
 \begin{lstlisting}
 --------------------------------------------------------
 --  DDL for Table GESCHLECHTER
@@ -196,7 +233,9 @@ SELECT * FROM NUMBERS ORDER BY ZAHLEN ASC;
 
 /
 \end{lstlisting}
-
+Für die Beziehung
+zwischen diesem und den Quelltabellen soll eine Zuordnungstabelle verwaltet
+werden.
 \begin{lstlisting}
 --------------------------------------------------------
 --  DDL for Table ZUORDNUNG
@@ -212,7 +251,10 @@ SELECT * FROM NUMBERS ORDER BY ZAHLEN ASC;
 
 /
 \end{lstlisting}
-
+Programm, das die Integration ausführt und sowohl für
+den initialen Ladevorgang der Tabelle Personal als auch für deren Fortschreibung
+geeignet ist (d.h. Angestellte und Arbeiter enthalten jeweils nur neue bzw. geänderte
+Datensätze).
 \begin{lstlisting}
 --------------------------------------------------------
 --  DDL for Function GETAGE_DATE
