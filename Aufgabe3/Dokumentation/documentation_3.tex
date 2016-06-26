@@ -28,6 +28,11 @@ frame=tbrl, %t: top, r, b, l
 \maketitle
 
 \section*{Aufgabe 2}
+Realisierung einer Min-Max-Skalierung auf einem Attribut A einer Relation.
+Skalierung selbst ist als Funktion implementiert, die mit den Parametern altes/neues Minimum/Maximum versehen ist,
+einen Wert als Parameter entgegennimmt und den skalierten Wert zurückliefert.
+Folgende Funktion wird berechnet:\\
+$ v' = \frac{v - min_A}{max_A - min_A}\cdot (newMax_A - newMin_A) + newMin_A $
 \begin{lstlisting}
 --------------------------------------------------------
 --  DDL for Function MIN_MAX_SCALE
@@ -43,6 +48,8 @@ END;
 
 /
 \end{lstlisting}
+Die oben definierte Funktion wird von einer Prozedur aufgerufen werden, die für ein festes Attribut einer Relation zunächst den minimalen und den maximalen Wert der bisherigen
+Attributwerte ermittelt und dann alle Werte durch die skalierten Werte ersetzt. 
 \begin{lstlisting}
 --------------------------------------------------------
 --  DDL for Procedure MIN_MAX_CALCULATOR
@@ -72,7 +79,7 @@ BEGIN
   UPDATE NUMBERS SET ZAHLEN = MIN_MAX_SCALE(min_old, min_new, (SELECT MAX(ZAHLEN) FROM NUMBERS), max_new, ZAHLEN);
 END;
 \end{lstlisting}
-
+Beispiel:
 \begin{lstlisting}
 --> Result: 
 EXECUTE min_max_calculator(0,10);
