@@ -306,22 +306,28 @@ END;
 --------------------------------------------------------
 --  DDL for Function GETGENDERCODE
 --------------------------------------------------------
-  CREATE OR REPLACE FUNCTION "GETGENDERCODE" 
+  create or replace FUNCTION "GETGENDERCODE" 
   (gender VARCHAR2, firstname VARCHAR2)
 RETURN NUMBER
+IS
 CURSOR CGCODE IS
 	SELECT G_CODE
 	FROM Geschlechter
   WHERE G_NAME = firstname;
 gendercode NUMBER;
 tmp NUMBER;
+x VARCHAR2(10);
+y VARCHAR2(10);
 BEGIN
-  CASE gender
-    WHEN 'maennlich' THEN gendercode := 2;
-    WHEN 'weiblich' THEN gendercode := 1;
-    ELSE gendercode := 0;
-  END CASE;
+  
+  x := 'männlich';
+  y := 'weiblich';
 
+  gendercode := 0;
+  IF gender like x THEN gendercode := 2;
+  END IF;
+  IF gender like y THEN gendercode := 1;
+  END IF;
   OPEN CGCODE;
   FETCH CGCODE into tmp;
   IF CGCODE%NOTFOUND THEN
@@ -331,7 +337,8 @@ BEGIN
       UPDATE GESCHLECHTER SET G_CODE = gendercode WHERE G_NAME = firstname;
     ELSE gendercode := tmp;
     END IF;
-  END IF
+  END IF;
+  CLOSE CGCODE;
   RETURN gendercode;
 END;
 
@@ -465,61 +472,43 @@ END;
 
 \begin{lstlisting}
 --------------------------------------------------------
---  DDL for Trigger UPDATE_ARBEITER
+--  DDL for Procedure TRANSFORMATION_ANGESTELLTE
 --------------------------------------------------------
-CREATE OR REPLACE TRIGGER UPDATE_ARBEITER
-  AFTER 
-    INSERT OR 
-    UPDATE OR 
-    DELETE 
-  ON Arbeiter
-  FOR EACH ROW
-DECLARE
-  z_nr NUMBER;
-  arb_nr VARCHAR2(60);
-  p_nr NUMBER;
+  create or replace PROCEDURE "TRANSFORMATION_ANGESTELLTE" 
+IS
+a_nr NUMBER;
+p_nr NUMBER;
+z_nr NUMBER;
+p_name VARCHAR2(30);
+p_vorname VARCHAR2(30);
+p_age DATE;
+p_geschlecht VARCHAR2(10);
+p_job VARCHAR(50);
+p_money NUMBER;
+DATA_FOUND exception;
+CURSOR CANGST IS
+	SELECT A_Nr, A_Name, A_Geburtsdatum, A_Berufsbezeichnung, A_Monatsgehalt, A_Geschlecht
+	FROM Angestellte;
 BEGIN
-   IF INSERTING THEN
-    SELECT pnr_sequence.nextval INTO p_nr FROM DUAL;
-    INSERT INTO PERSONAL(p_nr,p_name,p_vorname,p_alter,p_geschlecht,p_berufscode,p_jahreseinkommen) VALUES (p_nr,:NEW.A_NAME,:NEW.A_VORNAME,GETAGE_STRING(:NEW.A_GEBURTSMONAT),GETGENDERCODE('unbekannt',:NEW.A_VORNAME),GETJOBCODE('Arbeiter'),GETMONEY(:NEW.A_STUNDENLOHN*4*40));
-    arb_nr := CONCAT(CONCAT(:NEW.A_NAME,','),:NEW.A_VORNAME);
-    INSERT INTO ZUORDNUNG (Z_NR, Z_TABLE_OLD, Z_KEY_OLD) VALUES (p_nr, 'Arbeiter', arb_nr);
-    
-   ELSIF UPDATING THEN
-    IF :OLD.A_NAME != :NEW.A_NAME THEN
-      SELECT z.Z_NR INTO z_nr FROM ZUORDNUNG z WHERE z.Z_KEY_OLD = CONCAT(CONCAT(:OLD.A_NAME,','),:OLD.A_VORNAME); /* --> dieses SELECT ggf. auslagern und direkt nach ELSIF UPDATING, da es wird in allen IFs von Updating benoetigt */
-      UPDATE PERSONAL p SET p.P_NAME = :NEW.A_NAME WHERE p.P_NR = z_nr;
-      SELECT p.P_NR INTO p_nr FROM PERSONAL p WHERE p.P_NAME = :NEW.A_NAME AND p.P_VORNAME = :OLD.A_VORNAME; /* notwendig, da sonst die Komplette Spalte Z_KEY_OLD in Table ZUORDNUNG mit geaendertem Namen ueberschrieben wird*/
-      arb_nr := CONCAT(CONCAT(:NEW.A_NAME,','),:OLD.A_VORNAME);
-      UPDATE ZUORDNUNG z SET z.Z_KEY_OLD = arb_nr WHERE z.z_nr = p_nr;
-    END IF;
-    
-     IF :OLD.A_VORNAME != :NEW.A_VORNAME THEN
-      SELECT z.Z_NR INTO z_nr FROM ZUORDNUNG z WHERE z.Z_KEY_OLD = CONCAT(CONCAT(:OLD.A_NAME,','),:OLD.A_VORNAME);
-      /* DBMS_OUTPUT.PUT_LINE(z_nr); -- Fuer Debugging = Ausgabe auf DBMS-Console */
-      UPDATE PERSONAL p SET p.P_VORNAME = :NEW.A_VORNAME WHERE p.P_NR = z_nr;
-      SELECT p.P_NR INTO p_nr FROM PERSONAL p WHERE p.P_NAME = :OLD.A_NAME AND p.P_VORNAME = :NEW.A_VORNAME; /* notwendig, da sonst die Komplette Spalte Z_KEY_OLD in Table ZUORDNUNG mit geaendertem Namen ueberschrieben wird*/
-      arb_nr := CONCAT(CONCAT(:OLD.A_NAME,','),:NEW.A_VORNAME);
-      UPDATE ZUORDNUNG zg SET zg.Z_KEY_OLD = arb_nr WHERE zg.z_nr = p_nr;
-    END IF;
-    
-    IF :OLD.A_GEBURTSMONAT != :NEW.A_GEBURTSMONAT THEN
-      SELECT z.Z_NR INTO z_nr FROM ZUORDNUNG z WHERE z.Z_KEY_OLD = CONCAT(CONCAT(:OLD.A_NAME,','),:OLD.A_VORNAME);
-      UPDATE PERSONAL p SET p.p_ALTER = GETAGE_STRING(:NEW.A_GEBURTSMONAT) WHERE p.P_NR = z_nr;
-    END IF;
-
-    IF :OLD.A_STUNDENLOHN != :NEW.A_STUNDENLOHN THEN
-      SELECT z.Z_NR INTO z_nr FROM ZUORDNUNG z WHERE z.Z_KEY_OLD = CONCAT(CONCAT(:OLD.A_NAME,','),:OLD.A_VORNAME);
-      UPDATE PERSONAL p SET p.P_JAHRESEINKOMMEN = GETMONEY(:NEW.A_STUNDENLOHN * 40 *4) WHERE p.P_NR = z_nr;
-    END IF;
-    
-   ELSIF DELETING THEN
-      SELECT z.Z_NR INTO z_nr FROM ZUORDNUNG z WHERE z.Z_KEY_OLD = CONCAT(CONCAT(:OLD.A_NAME,','),:OLD.A_VORNAME);
-      DELETE FROM ZUORDNUNG z WHERE z.Z_NR = z_nr AND z.Z_KEY_OLD = CONCAT(CONCAT(:OLD.A_NAME,','),:OLD.A_VORNAME);
-      DELETE FROM PERSONAL p WHERE p.P_NR = z_nr;
-    
-   ELSE NULL;
-   END IF;
+  OPEN CANGST;
+  LOOP 
+    FETCH CANGST INTO a_nr, p_name, p_age, p_job, p_money, p_geschlecht;
+    EXIT WHEN CANGST%NOTFOUND;
+    begin 
+      SELECT z.Z_NR INTO z_nr FROM ZUORDNUNG z WHERE z.Z_KEY_OLD = TO_CHAR(a_nr, '99999999');
+      raise DATA_FOUND;
+    exception
+      when DATA_FOUND then
+        SELECT GETFIRSTNAME(p_name) INTO p_vorname FROM DUAL;
+        UPDATE PERSONAL p SET p.p_name = GETLASTNAME(p_name), p.p_vorname = p_vorname, p.p_alter = GETAGE_DATE(p_age), p.p_geschlecht = GETGENDERCODE(p_geschlecht,p_vorname), p.p_berufscode = GETJOBCODE(p_job), p.p_jahreseinkommen = GETMONEY(p_money) WHERE p.P_NR = z_nr;
+      when NO_DATA_FOUND then 
+        SELECT pnr_sequence.nextval INTO p_nr FROM DUAL;
+        SELECT GETFIRSTNAME(p_name) INTO p_vorname FROM DUAL;
+        INSERT INTO PERSONAL(p_nr,p_name,p_vorname,p_alter,p_geschlecht,p_berufscode,p_jahreseinkommen) VALUES (p_nr,GETLASTNAME(p_name),p_vorname,GETAGE_DATE(p_age),GETGENDERCODE(p_geschlecht,p_vorname),GETJOBCODE(p_job),GETMONEY(p_money));
+        INSERT INTO ZUORDNUNG (Z_NR, Z_TABLE_OLD, Z_KEY_OLD) VALUES (p_nr, 'Angestellter', TO_CHAR(a_nr, '99999999'));
+    end;
+  END LOOP; 
+  CLOSE CANGST;
 END;
 
 /
@@ -527,63 +516,42 @@ END;
 
 \begin{lstlisting}
 --------------------------------------------------------
---  DDL for Trigger UPDATE_ANGESTELLTE
+--  DDL for Procedure TRANSFORMATION_ARBEITER
 --------------------------------------------------------
-CREATE OR REPLACE TRIGGER UPDATE_ANGESTELLTE
-  AFTER 
-    INSERT OR 
-    UPDATE OR 
-    DELETE 
-  ON ANGESTELLTE
-  FOR EACH ROW
-DECLARE
-  z_nr NUMBER;
-  arb_nr VARCHAR(60);
-  p_nr NUMBER;
-  p_vorname VARCHAR2(30);
+  create or replace PROCEDURE "TRANSFORMATION_ARBEITER" 
+IS
+p_nr NUMBER;
+z_nr NUMBER;
+p_name VARCHAR2(30);
+p_vorname VARCHAR2(30);
+p_age VARCHAR2(5);
+p_geschlecht VARCHAR2(10);
+p_job VARCHAR(50);
+p_money NUMBER;
+arb_nr VARCHAR2(60);
+DATA_FOUND exception;
+CURSOR CARB IS
+	SELECT A_Name, A_Vorname, A_Geburtsmonat, A_Stundenlohn
+	FROM Arbeiter;
 BEGIN
-   IF INSERTING THEN
-    SELECT pnr_sequence.nextval INTO p_nr FROM DUAL;
-    SELECT GETFIRSTNAME(:NEW.A_NAME) INTO p_vorname FROM DUAL;
-    INSERT INTO PERSONAL(p_nr,p_name,p_vorname,p_alter,p_geschlecht,p_berufscode,p_jahreseinkommen) VALUES (p_nr,GETLASTNAME(:NEW.A_NAME),p_vorname,GETAGE_DATE(:NEW.A_GEBURTSDATUM),GETGENDERCODE(:NEW.A_GESCHLECHT,p_vorname),GETJOBCODE(:NEW.A_BERUFSBEZEICHNUNG),GETMONEY(:NEW.A_MONATSGEHALT));
-    INSERT INTO ZUORDNUNG (Z_NR, Z_TABLE_OLD, Z_KEY_OLD) VALUES (p_nr, 'Angestellter', TO_CHAR(:NEW.A_NR, '99999999'));
-    
-   ELSIF UPDATING THEN
-
-     SELECT z.Z_NR INTO z_nr FROM ZUORDNUNG z WHERE z.Z_KEY_OLD = TO_CHAR(:OLD.A_NR, '99999999');
-
-     IF :OLD.A_NR != :NEW.A_NR THEN
-      SELECT p.P_NR INTO p_nr FROM PERSONAL p WHERE p.P_NR = z_nr AND p.P_NAME = GETLASTNAME(:OLD.A_NAME) AND p.P_VORNAME = GETFIRSTNAME(:OLD.A_NAME); 
-      UPDATE ZUORDNUNG z SET z.Z_KEY_OLD = TO_CHAR(:NEW.A_NR, '99999999') WHERE z.Z_NR = p_nr;
-     END IF;
-
-     IF :OLD.A_NAME != :NEW.A_NAME THEN
-      UPDATE PERSONAL p SET p.P_NAME = GETLASTNAME(:NEW.A_NAME), p.P_VORNAME = GETFIRSTNAME(:NEW.A_NAME) WHERE p.P_NR = z_nr;
-     END IF;
-     
-     IF :OLD.A_GEBURTSDATUM != :NEW.A_GEBURTSDATUM THEN
-      UPDATE PERSONAL p SET p.p_ALTER = GETAGE_DATE(:NEW.A_GEBURTSDATUM) WHERE p.P_NR = z_nr;
-     END IF;
-    
-     IF :OLD.A_BERUFSBEZEICHNUNG != :NEW.A_BERUFSBEZEICHNUNG THEN
-      UPDATE PERSONAL p SET p.p_BERUFSCODE = GETJOBCODE(:NEW.A_BERUFSBEZEICHNUNG) WHERE p.P_NR = z_nr;
-     END IF;
-
-     IF :OLD.A_MONATSGEHALT != :NEW.A_MONATSGEHALT THEN
-      UPDATE PERSONAL p SET p.P_JAHRESEINKOMMEN = GETMONEY(:NEW.A_MONATSGEHALT) WHERE p.P_NR = z_nr;
-     END IF;
-
-     IF :OLD.A_GESCHLECHT != :NEW.A_GESCHLECHT THEN
-      UPDATE PERSONAL p SET p.P_geschlecht = GETGENDERCODE(:NEW.A_GESCHLECHT,GETFIRSTNAME(:OLD.A_NAME)) WHERE p.P_NR = z_nr;
-     END IF;
-    
-   ELSIF DELETING THEN
-      SELECT z.Z_NR INTO z_nr FROM ZUORDNUNG z WHERE z.Z_KEY_OLD = TO_CHAR(:OLD.A_NR, '99999999');
-      DELETE FROM ZUORDNUNG z WHERE z.Z_NR = z_nr AND z.Z_KEY_OLD = TO_CHAR(:OLD.A_NR, '99999999');
-      DELETE FROM PERSONAL p WHERE p.P_NR = z_nr;
-    
-   ELSE NULL;
-   END IF;
+  OPEN CARB;
+  LOOP 
+    FETCH CARB INTO p_name, p_vorname, p_age, p_money;
+    EXIT WHEN CARB%NOTFOUND;
+    arb_nr := CONCAT(CONCAT(p_name,','),p_vorname);
+    begin 
+      SELECT z.Z_NR INTO z_nr FROM ZUORDNUNG z WHERE z.Z_KEY_OLD = arb_nr;
+      raise DATA_FOUND;
+    exception
+      when DATA_FOUND then
+        UPDATE PERSONAL p SET p.p_alter = GETAGE_STRING(p_age), p.p_geschlecht = GETGENDERCODE('unbekannt',p_vorname), p.p_berufscode = GETJOBCODE('Arbeiter'), p.p_jahreseinkommen = GETMONEY(p_money*4*40) WHERE p.P_NR = z_nr;
+      when NO_DATA_FOUND then
+        SELECT pnr_sequence.nextval INTO p_nr FROM DUAL;
+        INSERT INTO PERSONAL(p_nr,p_name,p_vorname,p_alter,p_geschlecht,p_berufscode,p_jahreseinkommen) VALUES (p_nr,p_name,p_vorname,GETAGE_STRING(p_age),GETGENDERCODE('unbekannt',p_vorname),GETJOBCODE('Arbeiter'),GETMONEY(p_money*4*40));
+        INSERT INTO ZUORDNUNG (Z_NR, Z_TABLE_OLD, Z_KEY_OLD) VALUES (p_nr, 'Arbeiter', arb_nr);
+    end;
+  END LOOP; 
+  CLOSE CARB;
 END;
 
 /
@@ -627,32 +595,5 @@ Insert into GESCHLECHTER (G_NAME,G_CODE) values ('Fabian','2');
 \end{lstlisting}
 
 
-Nun werden Änderungen in die Tabellen eingetragen.
-\begin{lstlisting}
---------------------------------------------------------
---  Testcases
---------------------------------------------------------
-DELETE FROM ZUORDNUNG;
-DELETE FROM PERSONAL;
-/*1*/ EXECUTE TRANSFORMATION_ARBEITER;
-/*2*/ EXECUTE TRANSFORMATION_ANGESTELLTE;
-
-/*3*/ Insert into ARBEITER (A_NAME,A_VORNAME,A_GEBURTSMONAT,A_STUNDENLOHN) values ('Kapitaen','Blaubaer','05.44',33); 
-/*4*/ UPDATE ARBEITER SET A_NAME = 'Meyer' WHERE A_NAME = 'Meister'; /* !!! Table Zuordnung darf/sollte nur im einen Datensatz das Attribut Z_KEY_OLD updaten */
-/*5*/ UPDATE ARBEITER SET A_VORNAME = 'Hans-Joachim' WHERE A_NAME = 'Bach'; /* !!! Table Zuordnung darf/sollte nur im einen Datensatz das Attribut Z_KEY_OLD updaten */
-/*6*/ UPDATE ARBEITER SET A_GEBURTSMONAT = '01.01' WHERE A_NAME = 'Heinz';
-/*7*/ UPDATE ARBEITER SET A_STUNDENLOHN = 3.5 WHERE A_NAME = 'Mueller';
-/*8*/ DELETE FROM ARBEITER WHERE A_NAME = 'Kapitaen'; /* In Table Zuordnung darf/soll nur 1 Datensatz entfernt werden */
-
-/*9*/ Insert into ANGESTELLTE (A_NR,A_NAME,A_GEBURTSDATUM,A_BERUFSBEZEICHNUNG,A_MONATSGEHALT,A_GESCHLECHT) values ('5','Max Mustermann',to_date('10.03.67','DD.MM.RR'),'BWL','850','maennlich');
-/*10*/ UPDATE ANGESTELLTE SET A_NR = '10' WHERE A_NAME = 'Diana Irmscher'; /* !!! Table Zuordnung darf/sollte nur im einen Datensatz das Attribut Z_KEY_OLD updaten */
-/*11*/ UPDATE ANGESTELLTE SET A_NAME = 'Fabius Uhlmex' WHERE A_NAME = 'Fabian Uhlmann';
-/*12*/ UPDATE ANGESTELLTE SET A_GEBURTSDATUM = 03.10.1955 WHERE A_NAME = 'Alexandra Vogel';
-/*13*/ UPDATE ANGESTELLTE SET A_BERUFSBEZEICHNUNG = 'Facility Management' WHERE A_NAME = 'Alexander Boxhorn';
-/*14*/ UPDATE ANGESTELLTE SET A_MONATSGEHALT = 777 WHERE A_NAME = 'Alexander Boxhorn';
-/*15*/ UPDATE ANGESTELLTE SET A_GESCHLECHT = 'weiblich' WHERE A_NAME = 'Max Mustermann';
-/*16*/ DELETE FROM ANGESTELLTE WHERE A_NAME = 'Max Mustermann'; /* !!! Table Zuordnung darf/sollte nur im einen Datensatz das Attribut Z_KEY_OLD updaten */
-
-\end{lstlisting}
 
 \end{document}
