@@ -485,3 +485,39 @@ DELETE FROM PERSONAL;
 /*15*/ UPDATE ANGESTELLTE SET A_GESCHLECHT = 'weiblich' WHERE A_NAME = 'Max Mustermann';
 /*16*/ DELETE FROM ANGESTELLTE WHERE A_NAME = 'Max Mustermann'; /* !!! Table Zuordnung darf/sollte nur im einen Datensatz das Attribut Z_KEY_OLD updaten */
 
+
+
+
+/* TODO */
+create or replace TRIGGER UPDATE_ARBEITER
+  AFTER 
+    INSERT
+  ON Arbeiter
+  FOR EACH ROW
+DECLARE
+  p_nr NUMBER;
+  p_name VARCHAR2(30);
+  p_vorname VARCHAR2(30);
+  p_age VARCHAR2(5);
+  p_geschlecht VARCHAR2(10);
+  p_job VARCHAR(50);
+  p_money NUMBER;
+  z_nr NUMBER;
+  arb_nr VARCHAR(60);
+CURSOR CARB IS
+	SELECT A_Name, A_Vorname, A_Geburtsmonat, A_Stundenlohn
+	FROM Arbeiter;
+BEGIN
+   OPEN CARB;
+   FETCH CARB INTO p_name, p_vorname, p_age, p_money;
+   
+   arb_nr := CONCAT(CONCAT(p_name,','),p_vorname);
+   SELECT z.Z_NR INTO z_nr FROM ZUORDNUNG z WHERE z.Z_KEY_OLD = arb_nr;
+   
+     IF z_nr IS NOT NULL THEN 
+      UPDATE PERSONAL p SET p.p_alter = GETAGE_STRING(p_age), p.p_geschlecht = GETGENDERCODE('unbekannt',p_vorname), p.p_berufscode = GETJOBCODE('Arbeiter'), p.p_jahreseinkommen = GETMONEY(p_money*4*40) WHERE p.P_NR = z_nr;
+     ELSE 
+      INSERT INTO PERSONAL (p_nr,p_name,p_vorname,p_alter,p_geschlecht,p_berufscode,p_jahreseinkommen) VALUES (p_nr,p_name,p_vorname,GETAGE_STRING(p_age),GETGENDERCODE('unbekannt',p_vorname),GETJOBCODE('Arbeiter'),GETMONEY(p_money*4*40));
+      INSERT INTO ZUORDNUNG (Z_NR, Z_TABLE_OLD, Z_KEY_OLD) VALUES (p_nr, 'Arbeiter', arb_nr);
+    END IF;
+END;
